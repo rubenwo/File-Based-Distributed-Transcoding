@@ -4,7 +4,7 @@ public class Server {
 
     public static void main(String[] args) {
         new Thread(new ThreadedServer()).start();
-        
+
         /*String osName = System.getProperty("os.name");
 
         if (osName.contains("Windows")) {
