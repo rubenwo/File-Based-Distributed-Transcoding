@@ -6,10 +6,15 @@ public class MasterClient {
     public static final String HOSTNAME = "localhost";
 
     private Socket socket;
-    private OperatingSystem operatingSystem;
+    private OperatingSystem operatingSystem = null;
 
     public MasterClient() {
         detectOperatingSystem();
+        try {
+            Process proc = Runtime.getRuntime().exec(OperatingSystem.getEncoderPath(operatingSystem) + " -hwaccels");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         openSocket();
     }
 
