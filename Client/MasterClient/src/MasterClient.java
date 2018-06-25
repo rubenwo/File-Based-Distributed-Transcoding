@@ -6,13 +6,12 @@ public class MasterClient {
     public static final String HOSTNAME = "localhost";
 
     private Socket socket;
-    private OperatingSystem operatingSystem = null;
+    private OperatingSystem operatingSystem;
 
     public MasterClient() {
-        detectOperatingSystem();
+        operatingSystem = OperatingSystem.detectOperatingSystem(System.getProperty("os.name"));
         try {
-            //Process proc = Runtime.getRuntime().exec(OperatingSystem.getEncoderPath(operatingSystem) + " -hwaccels");
-            Runtime.getRuntime().exec("sh -c ls");
+            Process proc = Runtime.getRuntime().exec(OperatingSystem.getEncoderPath(operatingSystem) + " -hwaccels");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -27,20 +26,6 @@ public class MasterClient {
         }
     }
 
-    private void detectOperatingSystem() {
-        String osName = System.getProperty("os.name");
-        System.out.println(osName);
-
-        if (osName.contains("Windows")) {
-            operatingSystem = OperatingSystem.WINDOWS;
-        } else if (osName.contains("Mac")) {
-            operatingSystem = OperatingSystem.MAC;
-        } else if (osName.contains("Linux")) {
-            operatingSystem = OperatingSystem.LINUX;
-        } else {
-            System.out.println("This Operating system is not supported");
-        }
-    }
 
     public static void main(String[] args) {
         new MasterClient();
