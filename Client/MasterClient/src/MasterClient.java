@@ -11,7 +11,8 @@ public class MasterClient {
     public MasterClient() {
         detectOperatingSystem();
         try {
-            Process proc = Runtime.getRuntime().exec(OperatingSystem.getEncoderPath(operatingSystem) + " -hwaccels");
+            //Process proc = Runtime.getRuntime().exec(OperatingSystem.getEncoderPath(operatingSystem) + " -hwaccels");
+            Runtime.getRuntime().exec("sh -c ls");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,6 +29,7 @@ public class MasterClient {
 
     private void detectOperatingSystem() {
         String osName = System.getProperty("os.name");
+        System.out.println(osName);
 
         if (osName.contains("Windows")) {
             operatingSystem = OperatingSystem.WINDOWS;
