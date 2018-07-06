@@ -6,7 +6,7 @@ import java.net.Socket;
 public class ThreadedServer implements Runnable {
     private ServerSocket serverSocket;
 
-    private boolean isConnected = true;
+    private boolean running = true;
 
     public ThreadedServer() {
         openServerSocket();
@@ -22,14 +22,19 @@ public class ThreadedServer implements Runnable {
 
     @Override
     public void run() {
-        while (isConnected) {
+        while (running) {
             Socket socket = null;
             try {
                 socket = serverSocket.accept();
+                System.out.println("Connection established with client.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
             new Thread(new ConnectionHandler(socket)).start();
         }
+    }
+
+    public void shutdown() {
+        running = false;
     }
 }
