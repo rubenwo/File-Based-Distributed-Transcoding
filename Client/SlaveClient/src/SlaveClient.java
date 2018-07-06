@@ -48,11 +48,15 @@ public class SlaveClient {
         System.out.println("Receiving file...");
         FileOutputStream fileOutputStream = new FileOutputStream(new File(savedFile), true);
         long bytesRead;
+        long transferStart = System.currentTimeMillis();
         do {
             bytesRead = fromServer.read(buffer, 0, buffer.length);
             fileOutputStream.write(buffer, 0, buffer.length);
         } while (!(bytesRead < 1024));
-
+        long transferEnd = System.currentTimeMillis();
+        double elapsedTimeInSeconds = (transferEnd - transferStart) * 1000;
+        double transferSpeed = fileSize / elapsedTimeInSeconds;
+        System.out.println(transferSpeed + " MB/s");
         System.out.println("Finished receiving " + filename);
         fileOutputStream.close();
     }

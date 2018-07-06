@@ -24,7 +24,7 @@ public class ConnectionHandler implements Runnable {
             System.out.println("Output set-up.");
 
             System.out.println("Sending test-file");
-            sendFile(".\\Resources\\test.mp4");
+            sendFile(".\\Resources\\test2.mp4");
         } catch (IOException e) {
             e.printStackTrace();
         }
