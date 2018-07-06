@@ -3,9 +3,9 @@ public enum OperatingSystem {
 
     public static String getEncoderPath(OperatingSystem operatingSystem) {
         if (operatingSystem.equals(WINDOWS))
-            return "cmd /c start cmd.exe /K .\\Resources\\Windows\\ffmpeg_windows\\bin\\ffmpeg.exe";
+            return "cmd /c start cmd.exe /K .\\Resources\\Windows\\ffmpeg.exe";
         else if (operatingSystem.equals(MAC))
-            return "sh -c ./Resources/Mac/ffmpeg_mac/ffmpeg";
+            return "sh -c ./Resources/Mac/ffmpeg";
         else if (operatingSystem.equals(LINUX))
             return ".\\Resources\\Linux\\";
         else return "This operating system is not supported.";
