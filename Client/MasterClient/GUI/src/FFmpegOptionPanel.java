@@ -30,6 +30,7 @@ public class FFmpegOptionPanel extends JPanel {
             crfBox.addItem(Integer.toString(crf));
 
         JComboBox<String> audioEncoderLibsBox = new JComboBox<>(audioEncoderLibs);
+        JComboBox<String> audioChannelsBox = new JComboBox<>(audioChannels);
         JComboBox<String> audioBitrateBox = new JComboBox<>(audioBitrate[0]);
 
         JComboBox<String> encoderThreadsBox = new JComboBox<>();
@@ -68,6 +69,9 @@ public class FFmpegOptionPanel extends JPanel {
                     audioBitrateBox.addItem(audioBitrate[1][i]);
             }
         });
+        audioChannelsBox.addActionListener(e -> {
+            System.out.println(audioChannelsBox.getSelectedItem());
+        });
         audioBitrateBox.addActionListener(e -> {
             System.out.println(audioBitrateBox.getSelectedItem());
         });
@@ -79,6 +83,7 @@ public class FFmpegOptionPanel extends JPanel {
         dropDownPanel.add(videoPresetsBox);
         dropDownPanel.add(crfBox);
         dropDownPanel.add(audioEncoderLibsBox);
+        dropDownPanel.add(audioChannelsBox);
         dropDownPanel.add(audioBitrateBox);
         dropDownPanel.add(encoderThreadsBox);
         return dropDownPanel;
