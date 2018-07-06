@@ -2,8 +2,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
-public class ThreadedServer implements Runnable {
+public class ThreadedServer implements Runnable, SlaveListener {
+    private ArrayList<String> onlineClients = new ArrayList<>();
     private ServerSocket serverSocket;
 
     private boolean running = true;
@@ -30,8 +32,23 @@ public class ThreadedServer implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Thread(new ConnectionHandler(socket)).start();
+            new Thread(new ConnectionHandler(socket, onlineClients)).start();
         }
+    }
+
+    @Override
+    public void onSlaveOnline(String slaveClient) {
+        onlineClients.add(slaveClient);
+    }
+
+    @Override
+    public void onSlaveOffline(String slaveClient) {
+        onlineClients.removeIf(p -> p.equals(slaveClient));
+    }
+
+    @Override
+    public void onError() {
+        System.out.println("An error occurred.");
     }
 
     public void shutdown() {

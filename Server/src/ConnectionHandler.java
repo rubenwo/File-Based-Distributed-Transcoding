@@ -1,13 +1,20 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ConnectionHandler implements Runnable {
+
+    private ArrayList<String> onlineCLients;
+
     private Socket socket;
     private ObjectInputStream fromClient;
     private ObjectOutputStream toClient;
 
-    public ConnectionHandler(Socket socket) {
+    private String clientType;
+
+    public ConnectionHandler(Socket socket, ArrayList<String> onlineClients) {
         System.out.println("Connection Handler setting up.");
+        this.onlineCLients = onlineClients;
         this.socket = socket;
         System.out.println(this.socket);
         openStreams();
@@ -23,12 +30,23 @@ public class ConnectionHandler implements Runnable {
             toClient.flush();
             System.out.println("Output set-up.");
 
-            System.out.println("Sending test-file");
-            sendFile(".\\Resources\\test2.mp4");
+            clientType = fromClient.readUTF();
+
+            initClient();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    private void initClient() throws IOException {
+        if (clientType.equals("MasterClient")) {
+            toClient.writeObject(onlineCLients);
+            toClient.flush();
+        } else if (clientType.equals("SlaveClient")) {
+            System.out.println("Slave connected");
+        } else {
+            System.err.println("This client is not supported!");
+        }
     }
 
     @Override
