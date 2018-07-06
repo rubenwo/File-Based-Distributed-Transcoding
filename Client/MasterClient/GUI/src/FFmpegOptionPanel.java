@@ -9,9 +9,10 @@ public class FFmpegOptionPanel extends JPanel {
     private int threads_Min = 1;
     private int threads_Max = Runtime.getRuntime().availableProcessors() + 1;
     private String[][] videoPresets = {{"Select a Video Preset", "ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo"}, {"Select a Video Preset"}};
-    private String[][] audioPresets = {{"Select an Audio Preset", ""}, {"Select an Audio Preset"}};
+    private String[][] audioPresets = {{"Select Audio Bitrate", "96", "128", "160", "192", "256", "320"}, {"Select Audo Bitrate"}};
     private String[] videoEncoderLibs = {"Select a Video Encoder", "libx264", "libx265", "nvenc_hevc", "nvenc_h264"};
-    private String[] audioEncoderLibs = {"Select an Audio Encoder", "aac", "ac3"};
+    private String[] audioEncoderLibs = {"Select an Audio Encoder", "mp3", "aac", "ac3", "eac3"};
+    private String[] audioChannges = {"Select # of Audio channels (Default = input)", "2.1", "5.1", "7.1"};
 
     public FFmpegOptionPanel() {
         this.setLayout(new BorderLayout());
@@ -33,7 +34,7 @@ public class FFmpegOptionPanel extends JPanel {
         JComboBox<String> audioPresetsBox = new JComboBox<>(audioPresets[0]);
 
         JComboBox<String> encoderThreadsBox = new JComboBox<>();
-        encoderThreadsBox.addItem("Select # of Threads");
+        encoderThreadsBox.addItem("Select # of Threads (Default = all)");
         for (int thread = threads_Min; thread < threads_Max; thread++)
             encoderThreadsBox.addItem(Integer.toString(thread));
 

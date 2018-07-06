@@ -7,8 +7,7 @@ public class Frame {
     public Frame(ArrayList<String> onlineClients) {
         JFrame frame = new JFrame("File-Based Distributed Transcoding Master");
         frame.setPreferredSize(new Dimension(1280, 720));
-        //frame.setExtendedState(frame.MAXIMIZED_BOTH);
-
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JPanel contentPane = new JPanel(new BorderLayout());
 
         JPanel onlineClientPanel = new OnlineClientPanel(onlineClients);
