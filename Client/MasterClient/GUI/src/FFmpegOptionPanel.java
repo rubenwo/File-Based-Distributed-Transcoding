@@ -7,7 +7,8 @@ public class FFmpegOptionPanel extends JPanel {
     private int crf_Max = 30;
     private int threads_Min = 1;
     private int threads_Max = Runtime.getRuntime().availableProcessors() + 1;
-    private String[][] videoPresets = {{"Select a Video Preset", "ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo"}, {"Select a Video Preset"}};
+    private String[][] videoPresets = { {"Select a Video Preset", "ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo"},
+                                        {"Select a Video Preset", "hq", "hp", "bd", "ll", "llhq", "llhp", "default"}};
     private String[][] audioBitrate = {{"Select Audio Bitrate", "96", "128", "160", "192", "256", "320"}, {"Select Audo Bitrate"}};
     private String[] videoEncoderLibs = {"Select a Video Encoder", "libx264", "libx265", "nvenc_hevc", "nvenc_h264"};
     private String[] audioEncoderLibs = {"Select an Audio Encoder", "mp3", "aac", "ac3", "eac3"};
