@@ -20,6 +20,7 @@ public class FFmpegOptionPanel extends JPanel {
     public FFmpegOptionPanel() {
         this.setLayout(new BorderLayout());
         this.add(dropDownPanel(), BorderLayout.CENTER);
+        buildDefaultCommandMap();
     }
 
     private JPanel dropDownPanel() {
@@ -44,6 +45,7 @@ public class FFmpegOptionPanel extends JPanel {
 
         videoEncoderLibsBox.addActionListener(e -> {
             System.out.println(videoEncoderLibsBox.getSelectedItem());
+            ffmpegCommandMap.replace("videoEncoder", (String) videoEncoderLibsBox.getSelectedItem());
             if (videoEncoderLibsBox.getSelectedItem().equals("libx264") || videoEncoderLibsBox.getSelectedItem().equals("libx265")) {
                 videoPresetsBox.removeAllItems();
                 for (int i = 0; i < videoPresets[0].length; i++)
@@ -57,12 +59,15 @@ public class FFmpegOptionPanel extends JPanel {
         });
         videoPresetsBox.addActionListener(e -> {
             System.out.println(videoPresetsBox.getSelectedItem());
+            ffmpegCommandMap.replace("videoPreset", (String) videoPresetsBox.getSelectedItem());
         });
         crfBox.addActionListener(e -> {
             System.out.println(crfBox.getSelectedItem());
+            ffmpegCommandMap.replace("crf", (String) crfBox.getSelectedItem());
         });
         audioEncoderLibsBox.addActionListener(e -> {
             System.out.println(audioEncoderLibsBox.getSelectedItem());
+            ffmpegCommandMap.replace("audioEncoder", (String) audioEncoderLibsBox.getSelectedItem());
             if (audioEncoderLibsBox.getSelectedItem().equals("mp3")) {
                 audioBitrateBox.removeAllItems();
                 for (int i = 0; i < audioBitrate[0].length; i++)
@@ -78,6 +83,7 @@ public class FFmpegOptionPanel extends JPanel {
         });
         audioBitrateBox.addActionListener(e -> {
             System.out.println(audioBitrateBox.getSelectedItem());
+            ffmpegCommandMap.replace("audioBitrate", (String) audioBitrateBox.getSelectedItem());
         });
         encoderThreadsBox.addActionListener(e -> {
             System.out.println(encoderThreadsBox.getSelectedItem());
@@ -96,14 +102,22 @@ public class FFmpegOptionPanel extends JPanel {
     private void buildDefaultCommandMap() {
         ffmpegCommandMap.put("videoEncoder", "libx264");
         ffmpegCommandMap.put("videoPreset", "medium");
+        ffmpegCommandMap.put("crf", "20");
         ffmpegCommandMap.put("audioEncoder", "eac3");
         ffmpegCommandMap.put("audioBitrate", "640");
     }
 
-    private String[] getFFmpegCommands(String[] input) {
-        String[] commands = new String[input.length];
-        for (int i = 0; i < input.length; i++)
-            commands[i] = " -i " + input[i] + " -c:v " + ffmpegCommandMap.get("videoEncoder") + " -preset:v " + ffmpegCommandMap.get("videoPreset") + " -c:a " + ffmpegCommandMap.get("audioEncoder") + " -q:a " + ffmpegCommandMap.get("audioBitrate");
+    private String[] getFFmpegCommands(String[] inputs) {
+        String[] commands = new String[inputs.length];
+        for (int i = 0; i < inputs.length; i++)
+            commands[i] = " -i " + inputs[i] + " -c:v " + ffmpegCommandMap.get("videoEncoder") + " -preset:v " + ffmpegCommandMap.get("videoPreset") + " -crf " + ffmpegCommandMap.get("crf") + " -c:a " + ffmpegCommandMap.get("audioEncoder") + " -q:a " + ffmpegCommandMap.get("audioBitrate");
+        return commands;
+    }
+
+    private String[] getFfmpegCommandsWithCLI(String[] inputs, String flags) {
+        String[] commands = new String[inputs.length];
+        for (int i = 0; i < inputs.length; i++)
+            commands[i] = " -i " + inputs[i] + flags;
         return commands;
     }
 }
