@@ -33,7 +33,6 @@ public class SlaveClient {
 
         fromServer = new ObjectInputStream(socket.getInputStream());
 
-        receiveFile();
     }
 
     private void receiveFile() throws IOException {
