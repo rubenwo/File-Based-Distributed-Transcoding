@@ -1,18 +1,21 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 
 public class FFmpegOptionPanel extends JPanel {
+    private HashMap<String, String> ffmpegCommandMap = new HashMap<>();
     private int crf_Min = 0;
     private int crf_Max = 30;
     private int threads_Min = 1;
     private int threads_Max = Runtime.getRuntime().availableProcessors() + 1;
-    private String[][] videoPresets = { {"Select a Video Preset", "ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo"},
-                                        {"Select a Video Preset", "hq", "hp", "bd", "ll", "llhq", "llhp", "default"}};
+    private String[][] videoPresets = {{"Select a Video Preset", "ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo"},
+            {"Select a Video Preset", "hq", "hp", "bd", "ll", "llhq", "llhp", "default"}};
     private String[][] audioBitrate = {{"Select Audio Bitrate", "96", "128", "160", "192", "256", "320"}, {"Select Audo Bitrate"}};
     private String[] videoEncoderLibs = {"Select a Video Encoder", "libx264", "libx265", "nvenc_hevc", "nvenc_h264"};
     private String[] audioEncoderLibs = {"Select an Audio Encoder", "mp3", "aac", "ac3", "eac3"};
     private String[] audioChannels = {"Select # of Audio channels (Default = input)", "2.1", "5.1", "7.1"};
+
 
     public FFmpegOptionPanel() {
         this.setLayout(new BorderLayout());
@@ -88,5 +91,19 @@ public class FFmpegOptionPanel extends JPanel {
         dropDownPanel.add(audioBitrateBox);
         dropDownPanel.add(encoderThreadsBox);
         return dropDownPanel;
+    }
+
+    private void buildDefaultCommandMap() {
+        ffmpegCommandMap.put("videoEncoder", "libx264");
+        ffmpegCommandMap.put("videoPreset", "medium");
+        ffmpegCommandMap.put("audioEncoder", "eac3");
+        ffmpegCommandMap.put("audioBitrate", "640");
+    }
+
+    private String[] getFFmpegCommands(String[] input) {
+        String[] commands = new String[input.length];
+        for (int i = 0; i < input.length; i++)
+            commands[i] = " -i " + input[i] + " -c:v " + ffmpegCommandMap.get("videoEncoder") + " -preset:v " + ffmpegCommandMap.get("videoPreset") + " -c:a " + ffmpegCommandMap.get("audioEncoder") + " -q:a " + ffmpegCommandMap.get("audioBitrate");
+        return commands;
     }
 }
