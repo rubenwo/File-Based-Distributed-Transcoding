@@ -2,11 +2,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Frame {
     private String[] inputs;
+    private ArrayList<String> onlineClients = new ArrayList<>();
 
-    public Frame(ArrayList<String> onlineClients) {
+    public Frame(HashMap<String, String> slavesMap) {
+        onlineClients.addAll(slavesMap.keySet());
+
         JFrame frame = new JFrame("File-Based Distributed Transcoding Master");
         frame.setPreferredSize(new Dimension(1280, 720));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

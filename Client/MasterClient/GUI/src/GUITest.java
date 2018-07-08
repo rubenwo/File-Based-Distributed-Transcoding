@@ -1,13 +1,13 @@
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GUITest {
     public static void main(String[] args) {
-        ArrayList<String> onlineClients = new ArrayList<>();
-        onlineClients.add("client11");
-        onlineClients.add("client12");
-        onlineClients.add("client13");
-        onlineClients.add("client14");
-        onlineClients.add("client15");
+        HashMap<String, String> onlineClients = new HashMap<>();
+        onlineClients.put("client11", "127.0.0.1");
+        onlineClients.put("client12", "127.0.0.1");
+        onlineClients.put("client13", "127.0.0.1");
+        onlineClients.put("client14", "127.0.0.1");
+        onlineClients.put("client15", "127.0.0.1");
 
         new Frame(onlineClients);
         //new MasterLoginFrame();

@@ -21,6 +21,7 @@ public class MasterClient {
         operatingSystem = OperatingSystem.detectOperatingSystem(System.getProperty("os.name"));
         this.clientName = clientName;
         openSocket();
+        new Frame(slavesMap);
     }
 
     private void openSocket() {
