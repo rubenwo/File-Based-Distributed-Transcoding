@@ -1,37 +1,34 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ConnectionHandler implements Runnable {
-
-    private ArrayList<String> onlineCLients;
+    private HashMap<String, String> slavesMap;
 
     private Socket socket;
     private ObjectInputStream fromClient;
     private ObjectOutputStream toClient;
 
-    private String clientType;
+    private ClientStatusListener clientStatusListener;
 
-    public ConnectionHandler(Socket socket, ArrayList<String> onlineClients) {
-        System.out.println("Connection Handler setting up.");
-        this.onlineCLients = onlineClients;
+    public ConnectionHandler(Socket socket, HashMap<String, String> slavesMap, ClientStatusListener clientStatusListener) {
+        System.out.println("Connection Handler setting up...");
+
+        this.slavesMap = slavesMap;
         this.socket = socket;
-        System.out.println(this.socket);
+        this.clientStatusListener = clientStatusListener;
+
         openStreams();
+
         System.out.println("Connection Handler set-up.");
     }
 
     private void openStreams() {
-        System.out.println("Opening streams...");
+        System.out.println("Opening Object streams");
         try {
             fromClient = new ObjectInputStream(socket.getInputStream());
-            System.out.println("Input set-up.");
             toClient = new ObjectOutputStream(socket.getOutputStream());
             toClient.flush();
-            System.out.println("Output set-up.");
-
-            clientType = fromClient.readUTF();
-
             initClient();
         } catch (IOException e) {
             e.printStackTrace();
@@ -39,19 +36,27 @@ public class ConnectionHandler implements Runnable {
     }
 
     private void initClient() throws IOException {
-        if (clientType.equals("MasterClient")) {
-            toClient.writeObject(onlineCLients);
-            toClient.flush();
-        } else if (clientType.equals("SlaveClient")) {
-            System.out.println("Slave connected");
-        } else {
-            System.err.println("This client is not supported!");
+        System.out.println("Initializing Client...");
+        String clientType = fromClient.readUTF();
+        switch (clientType) {
+            case "MasterClient":
+                String master = fromClient.readUTF();
+                String masterIp = fromClient.readUTF();
+                clientStatusListener.onMasterOnline(master, masterIp);
+                toClient.writeObject(slavesMap);
+                toClient.flush();
+                break;
+            case "SlaveClient":
+                String slave = fromClient.readUTF();
+                String slaveIp = fromClient.readUTF();
+                clientStatusListener.onSlaveOnline(slave, slaveIp);
+                break;
         }
     }
 
     @Override
     public void run() {
-
+        System.out.println("Connection Handler is running...");
     }
 
     private void sendFile(String filename) throws IOException {

@@ -8,13 +8,11 @@ public class SlaveClient {
 
     private OperatingSystem operatingSystem;
 
-    public SlaveClient() {
+    private String clientName;
+
+    public SlaveClient(String clientName) {
         operatingSystem = OperatingSystem.detectOperatingSystem(System.getProperty("os.name"));
-        try {
-            Process proc = Runtime.getRuntime().exec(OperatingSystem.getEncoderPath(operatingSystem) + " -hwaccels");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.clientName = clientName;
         openSocket();
     }
 
@@ -28,11 +26,24 @@ public class SlaveClient {
     }
 
     private void openStream() throws IOException {
+        System.out.println("Opening Object streams...");
         toServer = new ObjectOutputStream(socket.getOutputStream());
         toServer.flush();
 
         fromServer = new ObjectInputStream(socket.getInputStream());
 
+        initConnection();
+        System.out.println("Connection is set-up.");
+    }
+
+    private void initConnection() throws IOException {
+        System.out.println("Initializing connection with Server...");
+        toServer.writeUTF("SlaveClient");
+        toServer.flush();
+        toServer.writeUTF(clientName);
+        toServer.flush();
+        toServer.writeUTF(socket.getInetAddress().toString());
+        toServer.flush();
     }
 
     private void receiveFile() throws IOException {
@@ -61,6 +72,6 @@ public class SlaveClient {
     }
 
     public static void main(String[] args) {
-        new SlaveClient();
+        new SlaveClient("New Slave");
     }
 }

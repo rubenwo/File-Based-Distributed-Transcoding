@@ -2,10 +2,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.HashMap;
 
-public class ThreadedServer implements Runnable, SlaveListener {
-    private ArrayList<String> onlineClients = new ArrayList<>();
+public class ThreadedServer implements Runnable, ClientStatusListener {
+    private HashMap<String, String> slavesMap = new HashMap<>();
+    private HashMap<String, String> mastersMap = new HashMap<>();
     private ServerSocket serverSocket;
 
     private boolean running = true;
@@ -25,6 +26,7 @@ public class ThreadedServer implements Runnable, SlaveListener {
     @Override
     public void run() {
         while (running) {
+            System.out.println(slavesMap.size());
             Socket socket = null;
             try {
                 socket = serverSocket.accept();
@@ -32,23 +34,33 @@ public class ThreadedServer implements Runnable, SlaveListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Thread(new ConnectionHandler(socket, onlineClients)).start();
+            new Thread(new ConnectionHandler(socket, slavesMap, this)).start();
         }
     }
 
     @Override
-    public void onSlaveOnline(String slaveClient) {
-        onlineClients.add(slaveClient);
+    public void onSlaveOnline(String slaveClient, String slaveClientIp) {
+        slavesMap.put(slaveClient, slaveClientIp);
     }
 
     @Override
     public void onSlaveOffline(String slaveClient) {
-        onlineClients.removeIf(p -> p.equals(slaveClient));
+        slavesMap.remove(slaveClient);
     }
 
     @Override
-    public void onError() {
-        System.out.println("An error occurred.");
+    public void onMasterOnline(String masterClient, String masterClientIp) {
+        mastersMap.put(masterClient, masterClientIp);
+    }
+
+    @Override
+    public void onMasterOffline(String masterClient) {
+        mastersMap.remove(masterClient);
+    }
+
+    @Override
+    public void onError(Error error) {
+        System.err.print(error.getMessage());
     }
 
     public void shutdown() {
