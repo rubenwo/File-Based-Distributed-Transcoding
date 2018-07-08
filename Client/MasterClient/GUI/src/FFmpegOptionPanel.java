@@ -20,6 +20,21 @@ public class FFmpegOptionPanel extends JPanel {
     public FFmpegOptionPanel() {
         this.setLayout(new BorderLayout());
         this.add(dropDownPanel(), BorderLayout.CENTER);
+        JTextField commandLine = new JTextField();
+        JButton startEncoding = new JButton("Start Encoding");
+        startEncoding.addActionListener(e -> {
+            if (!commandLine.getText().isEmpty()) {
+                //Callback
+                for (int i = 0; i < getFfmpegCommandsWithCLI(new String[10], commandLine.getText()).length; i++)
+                    System.out.println(getFfmpegCommandsWithCLI(new String[10], commandLine.getText())[i]);
+            } else {
+                //Callback
+                for (int i = 0; i < getFFmpegCommands(new String[10]).length; i++)
+                    System.out.println(getFFmpegCommands(new String[10])[i]);
+            }
+        });
+        this.add(commandLine, BorderLayout.SOUTH);
+        this.add(startEncoding, BorderLayout.WEST);
         buildDefaultCommandMap();
     }
 
