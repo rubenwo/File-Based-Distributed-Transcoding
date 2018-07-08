@@ -16,21 +16,27 @@ public class FFmpegOptionPanel extends JPanel {
     private String[] audioEncoderLibs = {"Select an Audio Encoder", "mp3", "aac", "ac3", "eac3"};
     private String[] audioChannels = {"Select # of Audio channels (Default = input)", "2.1", "5.1", "7.1"};
 
+    private String[] inputs;
 
-    public FFmpegOptionPanel() {
+    public FFmpegOptionPanel(Frame frame) {
         this.setLayout(new BorderLayout());
         this.add(dropDownPanel(), BorderLayout.CENTER);
         JTextField commandLine = new JTextField();
         JButton startEncoding = new JButton("Start Encoding");
         startEncoding.addActionListener(e -> {
-            if (!commandLine.getText().isEmpty()) {
-                //Callback
-                for (int i = 0; i < getFfmpegCommandsWithCLI(new String[10], commandLine.getText()).length; i++)
-                    System.out.println(getFfmpegCommandsWithCLI(new String[10], commandLine.getText())[i]);
+            inputs = frame.getInputs();
+            if (inputs != null) {
+                if (!commandLine.getText().isEmpty()) {
+                    //Callback
+                    for (int i = 0; i < getFfmpegCommandsWithCLI(commandLine.getText()).length; i++)
+                        System.out.println(getFfmpegCommandsWithCLI(commandLine.getText())[i]);
+                } else {
+                    //Callback
+                    for (int i = 0; i < getFFmpegCommands().length; i++)
+                        System.out.println(getFFmpegCommands()[i]);
+                }
             } else {
-                //Callback
-                for (int i = 0; i < getFFmpegCommands(new String[10]).length; i++)
-                    System.out.println(getFFmpegCommands(new String[10])[i]);
+                System.out.println("No input selected!");
             }
         });
         this.add(commandLine, BorderLayout.SOUTH);
@@ -122,17 +128,18 @@ public class FFmpegOptionPanel extends JPanel {
         ffmpegCommandMap.put("audioBitrate", "640");
     }
 
-    private String[] getFFmpegCommands(String[] inputs) {
+    private String[] getFFmpegCommands() {
         String[] commands = new String[inputs.length];
         for (int i = 0; i < inputs.length; i++)
             commands[i] = " -i " + inputs[i] + " -c:v " + ffmpegCommandMap.get("videoEncoder") + " -preset:v " + ffmpegCommandMap.get("videoPreset") + " -crf " + ffmpegCommandMap.get("crf") + " -c:a " + ffmpegCommandMap.get("audioEncoder") + " -q:a " + ffmpegCommandMap.get("audioBitrate");
         return commands;
     }
 
-    private String[] getFfmpegCommandsWithCLI(String[] inputs, String flags) {
+    private String[] getFfmpegCommandsWithCLI(String flags) {
         String[] commands = new String[inputs.length];
         for (int i = 0; i < inputs.length; i++)
             commands[i] = " -i " + inputs[i] + flags;
         return commands;
     }
+
 }

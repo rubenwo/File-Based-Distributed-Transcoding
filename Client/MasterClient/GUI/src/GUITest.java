@@ -10,5 +10,6 @@ public class GUITest {
         onlineClients.add("client15");
 
         new Frame(onlineClients);
+        //new MasterLoginFrame();
     }
 }
