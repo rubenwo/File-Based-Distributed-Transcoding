@@ -1,11 +1,11 @@
 public interface ClientStatusListener {
-    void onSlaveOnline(String slaveClient, String slaveClientIp);
+    void onSlaveOnline(ConnectionHandler slaveHandler);
 
-    void onSlaveOffline(String slaveClient);
+    void onSlaveOffline(ConnectionHandler slaveHandler);
 
-    void onMasterOnline(String masterClient, String masterClientIp);
+    void onMasterOnline(ConnectionHandler masterHandler);
 
-    void onMasterOffline(String masterClient);
+    void onMasterOffline(ConnectionHandler masterHandler);
 
     void onError(Error error);
 }

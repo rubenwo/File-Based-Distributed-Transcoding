@@ -6,14 +6,23 @@ public class SlaveClient {
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
 
+    private ListenerService listenerService;
+
     private OperatingSystem operatingSystem;
 
-    private String clientName;
+    private String clientId;
 
-    public SlaveClient(String clientName) {
+    public SlaveClient(String clientId) {
         operatingSystem = OperatingSystem.detectOperatingSystem(System.getProperty("os.name"));
-        this.clientName = clientName;
+        this.clientId = clientId;
+
         openSocket();
+
+        System.out.println("Starting updater service");
+        listenerService = new ListenerService(fromServer);
+        new Thread(listenerService).start();
+
+        new SlaveFrame();
     }
 
     private void openSocket() {
@@ -40,9 +49,7 @@ public class SlaveClient {
         System.out.println("Initializing connection with Server...");
         toServer.writeUTF("SlaveClient");
         toServer.flush();
-        toServer.writeUTF(clientName);
-        toServer.flush();
-        toServer.writeUTF(socket.getInetAddress().toString());
+        toServer.writeUTF(clientId);
         toServer.flush();
     }
 

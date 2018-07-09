@@ -1,20 +1,20 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class ConnectionHandler implements Runnable {
-    private HashMap<String, String> slavesMap;
-
     private Socket socket;
     private ObjectInputStream fromClient;
     private ObjectOutputStream toClient;
 
     private ClientStatusListener clientStatusListener;
 
-    public ConnectionHandler(Socket socket, HashMap<String, String> slavesMap, ClientStatusListener clientStatusListener) {
+    private String clientType;
+    private String clientId;
+
+    public ConnectionHandler(Socket socket, ClientStatusListener clientStatusListener) {
         System.out.println("Connection Handler setting up...");
 
-        this.slavesMap = slavesMap;
         this.socket = socket;
         this.clientStatusListener = clientStatusListener;
 
@@ -37,26 +37,39 @@ public class ConnectionHandler implements Runnable {
 
     private void initClient() throws IOException {
         System.out.println("Initializing Client...");
-        String clientType = fromClient.readUTF();
+        clientType = fromClient.readUTF();
         switch (clientType) {
             case "MasterClient":
-                String master = fromClient.readUTF();
-                String masterIp = fromClient.readUTF();
-                clientStatusListener.onMasterOnline(master, masterIp);
-                toClient.writeObject(slavesMap);
-                toClient.flush();
+                System.out.println("A Master client just came online.");
+                clientStatusListener.onMasterOnline(this);
                 break;
             case "SlaveClient":
-                String slave = fromClient.readUTF();
-                String slaveIp = fromClient.readUTF();
-                clientStatusListener.onSlaveOnline(slave, slaveIp);
+                System.out.println("A slave encoder just came online.");
+                clientStatusListener.onSlaveOnline(this);
                 break;
         }
+        clientId = fromClient.readUTF();
     }
 
     @Override
     public void run() {
         System.out.println("Connection Handler is running...");
+    }
+
+    public void updateMasterClients(ArrayList<ConnectionHandler> slaveHandlers) {
+        ArrayList<String> slaveNames = new ArrayList<>();
+        for (ConnectionHandler slave : slaveHandlers)
+            slaveNames.add(slave.getClientId());
+        try {
+            toClient.writeObject(slaveNames);
+            toClient.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 
     private void sendFile(String filename) throws IOException {

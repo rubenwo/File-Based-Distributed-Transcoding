@@ -2,11 +2,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class ThreadedServer implements Runnable, ClientStatusListener {
-    private HashMap<String, String> slavesMap = new HashMap<>();
-    private HashMap<String, String> mastersMap = new HashMap<>();
+    private ArrayList<String> slavesNames = new ArrayList<>();
+    private ArrayList<ConnectionHandler> slaveHandlers = new ArrayList<>();
+    private ArrayList<ConnectionHandler> masterHandlers = new ArrayList<>();
+
     private ServerSocket serverSocket;
 
     private boolean running = true;
@@ -26,7 +28,8 @@ public class ThreadedServer implements Runnable, ClientStatusListener {
     @Override
     public void run() {
         while (running) {
-            System.out.println(slavesMap.size());
+            System.out.println(slaveHandlers.size());
+            System.out.println(masterHandlers.size());
             Socket socket = null;
             try {
                 socket = serverSocket.accept();
@@ -34,33 +37,37 @@ public class ThreadedServer implements Runnable, ClientStatusListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Thread(new ConnectionHandler(socket, slavesMap, this)).start();
+            new Thread(new ConnectionHandler(socket, this)).start();
         }
     }
 
     @Override
-    public void onSlaveOnline(String slaveClient, String slaveClientIp) {
-        slavesMap.put(slaveClient, slaveClientIp);
+    public void onSlaveOnline(ConnectionHandler slaveHandler) {
+        slaveHandlers.add(slaveHandler);
+        for (ConnectionHandler master : masterHandlers)
+            master.updateMasterClients(slaveHandlers);
     }
 
     @Override
-    public void onSlaveOffline(String slaveClient) {
-        slavesMap.remove(slaveClient);
+    public void onSlaveOffline(ConnectionHandler slaveHandler) {
+        slaveHandlers.removeIf(p -> p.equals(slaveHandler));
+        for (ConnectionHandler master : masterHandlers)
+            master.updateMasterClients(slaveHandlers);
     }
 
     @Override
-    public void onMasterOnline(String masterClient, String masterClientIp) {
-        mastersMap.put(masterClient, masterClientIp);
+    public void onMasterOnline(ConnectionHandler masterHandler) {
+        masterHandlers.add(masterHandler);
     }
 
     @Override
-    public void onMasterOffline(String masterClient) {
-        mastersMap.remove(masterClient);
+    public void onMasterOffline(ConnectionHandler masterHandler) {
+        masterHandlers.removeIf(p -> p.equals(masterHandler));
     }
 
     @Override
     public void onError(Error error) {
-        System.err.print(error.getMessage());
+        error.printStackTrace();
     }
 
     public void shutdown() {

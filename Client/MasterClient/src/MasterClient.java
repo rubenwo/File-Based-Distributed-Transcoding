@@ -2,26 +2,35 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class MasterClient {
     public static final int PORT = 9000;
     public static final String HOSTNAME = "localhost";
 
-    private HashMap<String, String> slavesMap;
+    private ArrayList<String> onlineClients;
 
     private Socket socket;
     private ObjectOutputStream toServer;
     private ObjectInputStream fromServer;
+
+    private ListenerService listenerService;
+
     private OperatingSystem operatingSystem;
 
-    private String clientName;
+    private String clientId;
 
-    public MasterClient(String clientName) {
+    public MasterClient(String clientId) {
         operatingSystem = OperatingSystem.detectOperatingSystem(System.getProperty("os.name"));
-        this.clientName = clientName;
+        this.clientId = clientId;
+
         openSocket();
-        new Frame(slavesMap);
+
+        System.out.println("Starting updater service...");
+        listenerService = new ListenerService(fromServer);
+        new Thread(listenerService).start();
+
+        new Frame(onlineClients);
     }
 
     private void openSocket() {
@@ -48,16 +57,8 @@ public class MasterClient {
         System.out.println("Initializing Connection with Server...");
         toServer.writeUTF("MasterClient");
         toServer.flush();
-        toServer.writeUTF(clientName);
+        toServer.writeUTF(clientId);
         toServer.flush();
-        toServer.writeUTF(socket.getInetAddress().toString());
-        toServer.flush();
-
-        try {
-            slavesMap = (HashMap<String, String>) fromServer.readObject();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void main(String[] args) {
