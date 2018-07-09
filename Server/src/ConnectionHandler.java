@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ConnectionHandler implements Runnable {
+    private ArrayList<String> onlineSlaveIds;
     private Socket socket;
     private ObjectInputStream fromClient;
     private ObjectOutputStream toClient;
@@ -12,10 +13,11 @@ public class ConnectionHandler implements Runnable {
     private String clientType;
     private String clientId;
 
-    public ConnectionHandler(Socket socket, ClientStatusListener clientStatusListener) {
+    public ConnectionHandler(Socket socket, ArrayList<String> onlineSlaveIds, ClientStatusListener clientStatusListener) {
         System.out.println("Connection Handler setting up...");
 
         this.socket = socket;
+        this.onlineSlaveIds = onlineSlaveIds;
         this.clientStatusListener = clientStatusListener;
 
         openStreams();
@@ -42,6 +44,8 @@ public class ConnectionHandler implements Runnable {
             case "MasterClient":
                 System.out.println("A Master client just came online.");
                 clientStatusListener.onMasterOnline(this);
+                toClient.writeObject(onlineSlaveIds);
+                toClient.flush();
                 break;
             case "SlaveClient":
                 System.out.println("A slave encoder just came online.");
@@ -56,12 +60,11 @@ public class ConnectionHandler implements Runnable {
         System.out.println("Connection Handler is running...");
     }
 
-    public void updateMasterClients(ArrayList<ConnectionHandler> slaveHandlers) {
-        ArrayList<String> slaveNames = new ArrayList<>();
-        for (ConnectionHandler slave : slaveHandlers)
-            slaveNames.add(slave.getClientId());
+    public void updateMasterClients() {
         try {
-            toClient.writeObject(slaveNames);
+            toClient.writeByte(0);
+            toClient.flush();
+            toClient.writeObject(onlineSlaveIds);
             toClient.flush();
         } catch (IOException e) {
             e.printStackTrace();

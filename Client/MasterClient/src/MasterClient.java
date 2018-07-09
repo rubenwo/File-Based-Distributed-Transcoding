@@ -59,6 +59,12 @@ public class MasterClient {
         toServer.flush();
         toServer.writeUTF(clientId);
         toServer.flush();
+
+        try {
+            onlineClients = (ArrayList<String>) fromServer.readObject();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

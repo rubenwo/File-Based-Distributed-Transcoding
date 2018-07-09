@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 
 public class ListenerService implements Runnable {
     private boolean isConnected = true;
@@ -20,6 +21,13 @@ public class ListenerService implements Runnable {
                 switch (dataType) {
                     case 0:
                         //Update something
+                        try {
+                            ArrayList<String> online = (ArrayList<String>) fromServer.readObject();
+                            for (int i = 0; i < online.size(); i++)
+                                System.out.println(online.get(i));
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        }
                         break;
                 }
             } catch (IOException e) {
