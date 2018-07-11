@@ -20,8 +20,8 @@ public class ServerListenerService implements Runnable {
                     case 0:
                         try {
                             String[] ffmpegCommands = (String[]) fromClient.readObject();
-                            for (int i = 0; i < ffmpegCommands.length; i++)
-                                System.out.println(ffmpegCommands[i]);
+                            for (String command : ffmpegCommands)
+                                System.out.println(command);
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
