@@ -18,7 +18,7 @@ public class FFmpegOptionPanel extends JPanel {
 
     private String[] inputs;
 
-    public FFmpegOptionPanel(Frame frame) {
+    public FFmpegOptionPanel(Frame frame, CommandListener commandListener) {
         this.setLayout(new BorderLayout());
         this.add(dropDownPanel(), BorderLayout.CENTER);
         JTextField commandLine = new JTextField();
@@ -26,17 +26,16 @@ public class FFmpegOptionPanel extends JPanel {
         startEncoding.addActionListener(e -> {
             inputs = frame.getInputs();
             if (inputs != null) {
+                String[] commands = new String[inputs.length];
                 if (!commandLine.getText().isEmpty()) {
-                    //Callback
-                    for (int i = 0; i < getFfmpegCommandsWithCLI(commandLine.getText()).length; i++)
-                        System.out.println(getFfmpegCommandsWithCLI(commandLine.getText())[i]);
+                    commands = getFfmpegCommandsWithCLI(commandLine.getText());
+                    commandListener.onCommandsAvailable(commands);
                 } else {
-                    //Callback
-                    for (int i = 0; i < getFFmpegCommands().length; i++)
-                        System.out.println(getFFmpegCommands()[i]);
+                    commands = getFFmpegCommands();
+                    commandListener.onCommandsAvailable(commands);
                 }
             } else {
-                System.out.println("No input selected!");
+                commandListener.onNoInputSelected();
             }
         });
         this.add(commandLine, BorderLayout.SOUTH);

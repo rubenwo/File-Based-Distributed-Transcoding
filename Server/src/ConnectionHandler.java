@@ -23,6 +23,7 @@ public class ConnectionHandler implements Runnable {
         openStreams();
 
         System.out.println("Connection Handler set-up.");
+        new Thread(new ServerListenerService(fromClient)).start();
     }
 
     private void openStreams() {

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Frame {
     private String[] inputs;
 
-    public Frame(ArrayList<String> onlineClients) {
+    public Frame(ArrayList<String> onlineClients, CommandListener commandListener) {
         JFrame frame = new JFrame("File-Based Distributed Transcoding Master");
         frame.setPreferredSize(new Dimension(1280, 720));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -16,7 +16,7 @@ public class Frame {
         JPanel onlineClientPanel = new OnlineClientPanel(onlineClients);
         onlineClientPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
 
-        JPanel ffmpegOptionPanel = new FFmpegOptionPanel(this);
+        JPanel ffmpegOptionPanel = new FFmpegOptionPanel(this, commandListener);
         ffmpegOptionPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
 
         contentPane.add(onlineClientPanel, BorderLayout.EAST);
