@@ -2,12 +2,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-public class ListenerService implements Runnable {
+public class ClientListenerService implements Runnable {
     private boolean isConnected = true;
 
     private ObjectInputStream fromServer;
 
-    public ListenerService(ObjectInputStream fromServer) {
+    public ClientListenerService(ObjectInputStream fromServer) {
         this.fromServer = fromServer;
     }
 

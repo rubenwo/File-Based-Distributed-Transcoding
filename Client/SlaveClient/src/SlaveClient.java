@@ -6,7 +6,7 @@ public class SlaveClient {
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
 
-    private ListenerService listenerService;
+    private ClientListenerService clientListenerService;
 
     private OperatingSystem operatingSystem;
 
@@ -19,8 +19,8 @@ public class SlaveClient {
         openSocket();
 
         System.out.println("Starting updater service");
-        listenerService = new ListenerService(fromServer);
-        new Thread(listenerService).start();
+        clientListenerService = new ClientListenerService(fromServer);
+        new Thread(clientListenerService).start();
 
         new SlaveFrame();
     }

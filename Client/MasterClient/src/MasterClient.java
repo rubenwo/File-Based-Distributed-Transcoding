@@ -4,7 +4,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class MasterClient {
+public class MasterClient implements CommandListener {
     public static final int PORT = 9000;
     public static final String HOSTNAME = "localhost";
 
@@ -14,7 +14,7 @@ public class MasterClient {
     private ObjectOutputStream toServer;
     private ObjectInputStream fromServer;
 
-    private ListenerService listenerService;
+    private ClientListenerService clientListenerService;
 
     private OperatingSystem operatingSystem;
 
@@ -27,10 +27,10 @@ public class MasterClient {
         openSocket();
 
         System.out.println("Starting updater service...");
-        listenerService = new ListenerService(fromServer);
-        new Thread(listenerService).start();
+        clientListenerService = new ClientListenerService(fromServer);
+        new Thread(clientListenerService).start();
 
-        new Frame(onlineClients);
+        new Frame(onlineClients, this);
     }
 
     private void openSocket() {
@@ -65,6 +65,26 @@ public class MasterClient {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onCommandsAvailable(String[] commands) {
+        String[] ffmpegCommands = new String[commands.length];
+        for (int i = 0; i < commands.length; i++)
+            ffmpegCommands[i] = OperatingSystem.getEncoderPath(operatingSystem) + commands[i];
+        try {
+            toServer.writeByte(0);
+            toServer.flush();
+            toServer.writeObject(ffmpegCommands);
+            toServer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onNoInputSelected() {
+        System.out.println("No input selected!");
     }
 
     public static void main(String[] args) {
