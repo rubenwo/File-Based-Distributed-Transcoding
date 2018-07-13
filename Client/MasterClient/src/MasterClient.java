@@ -69,13 +69,10 @@ public class MasterClient implements CommandListener {
 
     @Override
     public void onCommandsAvailable(String[] commands) {
-        String[] ffmpegCommands = new String[commands.length];
-        for (int i = 0; i < commands.length; i++)
-            ffmpegCommands[i] = OperatingSystem.getEncoderPath(operatingSystem) + commands[i];
         try {
             toServer.writeByte(0);
             toServer.flush();
-            toServer.writeObject(ffmpegCommands);
+            toServer.writeObject(commands);
             toServer.flush();
         } catch (IOException e) {
             e.printStackTrace();

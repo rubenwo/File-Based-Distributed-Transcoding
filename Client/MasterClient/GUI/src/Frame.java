@@ -37,7 +37,8 @@ public class Frame {
         JMenuItem openDirectory = new JMenuItem("Open Directory");
         openDirectory.addActionListener(e -> {
             System.out.println("Clicked open.");
-            inputs = getInputs(".\\Resources\\testFiles");
+            //inputs = getInputs(".\\Resources\\testFiles");
+            inputs = getInputs("./Resources/testFiles");
         });
         openDirectory.setToolTipText("Choose the directory you wish to transcode.");
         JMenuItem savePreset = new JMenuItem("Save Preset");
