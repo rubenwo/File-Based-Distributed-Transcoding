@@ -5,13 +5,14 @@ public enum OperatingSystem {
         if (operatingSystem.equals(WINDOWS))
             return "./Resources/Windows/ffmpeg";
         else if (operatingSystem.equals(MAC))
-            return "/usr/bin/open -a Terminal ./Resources/Mac/ffmpeg_mac/ffmpeg -hwaccels";
+            return "./Resources/Mac/ffmpeg";
         else if (operatingSystem.equals(LINUX))
-            return ".\\Resources\\Linux\\";
+            return ".//Resources/Linux/ffmpeg";
         else return "This operating system is not supported.";
     }
 
-    public static OperatingSystem detectOperatingSystem(String osName) {
+    public static OperatingSystem detectOperatingSystem() {
+        String osName = System.getProperty("os.name");
         OperatingSystem operatingSystem;
         System.out.println(osName);
 

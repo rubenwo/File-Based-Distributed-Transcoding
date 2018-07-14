@@ -23,7 +23,7 @@ public class ConnectionHandler implements Runnable {
         openStreams();
 
         System.out.println("Connection Handler set-up.");
-        new Thread(new ServerListenerService(fromClient)).start();
+        new Thread(new ServerListenerService(this)).start();
     }
 
     private void openStreams() {
@@ -76,6 +76,10 @@ public class ConnectionHandler implements Runnable {
         return clientId;
     }
 
+    public ObjectInputStream getFromClient() {
+        return fromClient;
+    }
+
     private void sendFile(String filename) throws IOException {
         System.out.println("Sending File: " + filename);
         toClient.writeUTF(filename);
@@ -104,6 +108,5 @@ public class ConnectionHandler implements Runnable {
         fileInputStream.close();
         System.out.println("Finished sending: " + filename);
         toClient.flush();
-
     }
 }

@@ -2,36 +2,44 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class FFmpegReaderTest {
-    public static void main(String[] args) {
-        String ff = OperatingSystem.getEncoderPath(OperatingSystem.WINDOWS);
-        String input = "-i";
-        String inputPath = "./Resources/testFiles/test.mp4";
-        String vCommand = "libx264";
-        String aCommand = "copy";
-        String output = "./Resources/test2.mkv";
-        Process processDuration = null;
+public class FFmpegHandler implements Runnable {
+    private Process ffmpeg = null;
+    private ProgressListener progressListener;
+
+    public FFmpegHandler(OperatingSystem operatingSystem, String command, ProgressListener progressListener) {
+        this.progressListener = progressListener;
+        String[] commands = command.split(" ");
+        List<String> processCommands = new ArrayList<>();
+        processCommands.add(OperatingSystem.getEncoderPath(operatingSystem));
+        for (String str : commands)
+            processCommands.add(str);
+
         try {
-            processDuration = new ProcessBuilder(ff, input, inputPath, "-c:v", vCommand, "-preset:v", "slow", "-c:a", aCommand, output).redirectErrorStream(true).start();
+            ffmpeg = new ProcessBuilder(processCommands).redirectErrorStream(true).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(processDuration.getInputStream(), Charset.defaultCharset()));
+    }
+
+    @Override
+    public void run() {
+        BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(ffmpeg.getInputStream(), Charset.defaultCharset()));
+
         try {
             String line;
             int durationMillis = 0;
 
             while ((line = processOutputReader.readLine()) != null) {
                 if (line.contains("Duration")) {
-                    System.out.println(line);
                     String[] durationString = line.split(",")[0].substring(12, 23).split(":");
                     durationMillis += Integer.valueOf(durationString[0]) * 3600000;
                     durationMillis += Integer.valueOf(durationString[1]) * 60000;
                     durationMillis += Integer.valueOf(durationString[2].substring(0, 2)) * 1000;
                     durationMillis += Integer.valueOf(durationString[2].substring(3, 5));
-
-                    System.out.println(durationMillis);
                 }
                 if (line.contains("frame") && line.contains("time")) {
                     String[] currentTime = line.split("=")[5].split(":");
@@ -44,10 +52,11 @@ public class FFmpegReaderTest {
 
                     double percent = (double) currentTimeMillis / durationMillis * 100;
                     percent = Math.round(percent * 100.0) / 100.0;
-                    System.out.println(percent + "% Done");
+                    progressListener.onProgressUpdate(percent);
                 }
             }
-            processDuration.waitFor();
+            ffmpeg.waitFor();
+            progressListener.onProgressUpdate(100.0);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

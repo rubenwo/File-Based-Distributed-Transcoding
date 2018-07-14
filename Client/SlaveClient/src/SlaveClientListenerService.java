@@ -2,13 +2,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
-public class ClientListenerService implements Runnable {
+public class SlaveClientListenerService implements Runnable {
+
     private boolean isConnected = true;
-
     private ObjectInputStream fromServer;
+    private FFmpegJobListener fFmpegJobListener;
 
-    public ClientListenerService(ObjectInputStream fromServer) {
+    public SlaveClientListenerService(ObjectInputStream fromServer, FFmpegJobListener fFmpegJobListener) {
         this.fromServer = fromServer;
+        this.fFmpegJobListener = fFmpegJobListener;
     }
 
     @Override
@@ -19,16 +21,9 @@ public class ClientListenerService implements Runnable {
             try {
                 byte dataType = fromServer.readByte();
                 switch (dataType) {
-                    case 0:
-                        //Update something
-                        try {
-                            ArrayList<String> online = (ArrayList<String>) fromServer.readObject();
-                            for (int i = 0; i < online.size(); i++)
-                                System.out.println(online.get(i));
-                        } catch (ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        break;
+                    case 1:
+                        String command = fromServer.readUTF();
+                        fFmpegJobListener.onJobRequest(command);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

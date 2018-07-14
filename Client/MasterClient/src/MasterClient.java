@@ -14,20 +14,20 @@ public class MasterClient implements CommandListener {
     private ObjectOutputStream toServer;
     private ObjectInputStream fromServer;
 
-    private ClientListenerService clientListenerService;
+    private MasterClientListenerService clientListenerService;
 
     private OperatingSystem operatingSystem;
 
     private String clientId;
 
     public MasterClient(String clientId) {
-        operatingSystem = OperatingSystem.detectOperatingSystem(System.getProperty("os.name"));
+        operatingSystem = OperatingSystem.detectOperatingSystem();
         this.clientId = clientId;
 
         openSocket();
 
         System.out.println("Starting updater service...");
-        clientListenerService = new ClientListenerService(fromServer);
+        clientListenerService = new MasterClientListenerService(fromServer);
         new Thread(clientListenerService).start();
 
         new Frame(onlineClients, this);

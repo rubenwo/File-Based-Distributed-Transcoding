@@ -1,25 +1,25 @@
 import java.io.*;
 import java.net.Socket;
 
-public class SlaveClient {
+public class SlaveClient implements ProgressListener, FFmpegJobListener {
     private Socket socket;
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
 
-    private ClientListenerService clientListenerService;
+    private SlaveClientListenerService clientListenerService;
 
     private OperatingSystem operatingSystem;
 
     private String clientId;
 
     public SlaveClient(String clientId) {
-        operatingSystem = OperatingSystem.detectOperatingSystem(System.getProperty("os.name"));
+        operatingSystem = OperatingSystem.detectOperatingSystem();
         this.clientId = clientId;
 
         openSocket();
 
         System.out.println("Starting updater service");
-        clientListenerService = new ClientListenerService(fromServer);
+        clientListenerService = new SlaveClientListenerService(fromServer, this);
         new Thread(clientListenerService).start();
 
         new SlaveFrame();
@@ -76,6 +76,29 @@ public class SlaveClient {
         System.out.println(transferSpeed + " MB/s");
         System.out.println("Finished receiving " + filename);
         fileOutputStream.close();
+    }
+
+    @Override
+    public void onProgressUpdate(double progress) {
+        try {
+            toServer.writeByte(1);
+            toServer.flush();
+            toServer.writeDouble(progress);
+            toServer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onError(Error error) {
+        System.out.println(error.toString());
+    }
+
+    @Override
+    public void onJobRequest(String command) {
+        FFmpegHandler fFmpegHandler = new FFmpegHandler(operatingSystem, command, this);
+        new Thread(fFmpegHandler).start();
     }
 
     public static void main(String[] args) {

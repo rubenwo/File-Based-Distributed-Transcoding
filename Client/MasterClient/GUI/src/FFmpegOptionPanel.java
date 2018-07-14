@@ -137,7 +137,7 @@ public class FFmpegOptionPanel extends JPanel {
     private String[] getFfmpegCommandsWithCLI(String flags) {
         String[] commands = new String[inputs.length];
         for (int i = 0; i < inputs.length; i++)
-            commands[i] = " -i " + inputs[i] + flags;
+            commands[i] = "-i " + inputs[i] + flags;
         return commands;
     }
 

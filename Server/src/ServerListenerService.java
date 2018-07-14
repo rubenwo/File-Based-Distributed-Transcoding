@@ -5,8 +5,8 @@ public class ServerListenerService implements Runnable {
     private ObjectInputStream fromClient;
     private boolean isConnected = true;
 
-    public ServerListenerService(ObjectInputStream fromClient) {
-        this.fromClient = fromClient;
+    public ServerListenerService(ConnectionHandler connectionHandler) {
+        this.fromClient = connectionHandler.getFromClient();
         System.out.println("Starting Listener updater service...");
     }
 
@@ -25,6 +25,11 @@ public class ServerListenerService implements Runnable {
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
+                        break;
+                    case 1:
+                        double progress = fromClient.readDouble();
+                        System.out.println(progress);
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
