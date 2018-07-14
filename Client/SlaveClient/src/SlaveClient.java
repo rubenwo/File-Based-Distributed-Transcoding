@@ -10,6 +10,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobListener {
 
     private OperatingSystem operatingSystem;
 
+    private SlaveFrame slaveFrame;
     private String clientId;
 
     public SlaveClient(String clientId) {
@@ -22,7 +23,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobListener {
         clientListenerService = new SlaveClientListenerService(fromServer, this);
         new Thread(clientListenerService).start();
 
-        new SlaveFrame();
+        slaveFrame = new SlaveFrame();
     }
 
     private void openSocket() {
@@ -88,6 +89,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        slaveFrame.updateCurrentJob("Test File.mkv", progress);
     }
 
     @Override
