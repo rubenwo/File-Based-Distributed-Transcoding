@@ -10,7 +10,6 @@ public class ConnectionHandler implements Runnable {
 
     private ClientStatusListener clientStatusListener;
 
-    private String clientType;
     private String clientId;
 
     public ConnectionHandler(Socket socket, ArrayList<String> onlineSlaveIds, ClientStatusListener clientStatusListener) {
@@ -40,7 +39,7 @@ public class ConnectionHandler implements Runnable {
 
     private void initClient() throws IOException {
         System.out.println("Initializing Client...");
-        clientType = fromClient.readUTF();
+        String clientType = fromClient.readUTF();
         switch (clientType) {
             case "MasterClient":
                 System.out.println("A Master client just came online.");
@@ -62,6 +61,7 @@ public class ConnectionHandler implements Runnable {
     }
 
     public void updateMasterClients() {
+        System.out.println("Updating Slave client List");
         try {
             toClient.writeByte(0);
             toClient.flush();
