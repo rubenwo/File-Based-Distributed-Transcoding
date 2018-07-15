@@ -23,6 +23,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
     private void openServerSocket() {
         try {
             serverSocket = new ServerSocket(Server.PORT, 0, InetAddress.getByName(Server.HOSTNAME));
+            System.out.println(Server.HOSTNAME);
         } catch (IOException e) {
             e.printStackTrace();
         }

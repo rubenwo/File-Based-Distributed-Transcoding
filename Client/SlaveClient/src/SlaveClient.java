@@ -1,8 +1,14 @@
 import java.io.*;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.UUID;
 
 public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
+    public static final int PORT = 9000;
+    public static String HOSTNAME = "";
+
     private Socket socket;
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
@@ -29,7 +35,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
 
     private void openSocket() {
         try {
-            socket = new Socket(MasterClient.HOSTNAME, MasterClient.PORT);
+            socket = new Socket(SlaveClient.HOSTNAME, SlaveClient.PORT);
             openStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,6 +123,11 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     }
 
     public static void main(String[] args) {
+        try {
+            HOSTNAME = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         new SlaveClient("Slave Id: " + UUID.randomUUID().toString());
     }
 }

@@ -1,12 +1,14 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class MasterClient implements CommandListener, SlaveStatusListener {
     public static final int PORT = 9000;
-    public static final String HOSTNAME = "localhost";
+    public static String HOSTNAME = "";
 
     private ArrayList<String> onlineClients;
 
@@ -108,6 +110,11 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
     }
 
     public static void main(String[] args) {
+        try {
+            HOSTNAME = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         new MasterClient("New Master");
     }
 }
