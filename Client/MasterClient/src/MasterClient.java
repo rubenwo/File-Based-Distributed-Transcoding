@@ -16,12 +16,9 @@ public class MasterClient implements CommandListener {
 
     private MasterClientListenerService clientListenerService;
 
-    private OperatingSystem operatingSystem;
-
     private String clientId;
 
     public MasterClient(String clientId) {
-        operatingSystem = OperatingSystem.detectOperatingSystem();
         this.clientId = clientId;
 
         openSocket();

@@ -1,5 +1,7 @@
 public interface ProgressListener {
-    void onProgressUpdate(String fileName, double progress);
+    void onJobSubmitted(String fileName);
+
+    void onProgressUpdate(double progress);
 
     void onJobDone();
 

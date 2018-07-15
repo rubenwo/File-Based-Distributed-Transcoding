@@ -18,7 +18,7 @@ public class FFmpegHandler implements Runnable {
         processCommands.add(OperatingSystem.getEncoderPath(operatingSystem));
         for (String str : commands)
             processCommands.add(str);
-
+        progressListener.onJobSubmitted(inputFile);
         try {
             ffmpeg = new ProcessBuilder(processCommands).redirectErrorStream(true).start();
         } catch (IOException e) {
@@ -53,7 +53,7 @@ public class FFmpegHandler implements Runnable {
 
                     double percent = (double) currentTimeMillis / durationMillis * 100;
                     percent = Math.round(percent * 100.0) / 100.0;
-                    progressListener.onProgressUpdate(inputFile, percent);
+                    progressListener.onProgressUpdate(percent);
                 }
             }
             ffmpeg.waitFor();

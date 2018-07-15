@@ -48,6 +48,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
 
     private void initConnection() throws IOException {
         System.out.println("Initializing connection with Server...");
+        System.out.println(clientId);
         toServer.writeUTF("SlaveClient");
         toServer.flush();
         toServer.writeUTF(clientId);
@@ -80,7 +81,12 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     }
 
     @Override
-    public void onProgressUpdate(String fileName, double progress) {
+    public void onJobSubmitted(String fileName) {
+        slaveFrame.setCurrentJobFileName(fileName);
+    }
+
+    @Override
+    public void onProgressUpdate(double progress) {
         try {
             toServer.writeByte(1);
             toServer.flush();
@@ -89,12 +95,13 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        slaveFrame.updateCurrentJob(fileName, progress);
+        slaveFrame.updateCurrentJob(progress);
     }
 
     @Override
     public void onJobDone() {
-
+        System.out.println("Done transcoding!");
+        slaveFrame.resetFrame();
     }
 
     @Override
@@ -104,8 +111,8 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
 
     @Override
     public void onJobRequest(String command) {
-        FFmpegHandler fFmpegHandler = new FFmpegHandler(operatingSystem, command, this);
-        new Thread(fFmpegHandler).start();
+        FFmpegHandler ffmpegHandler = new FFmpegHandler(operatingSystem, command, this);
+        new Thread(ffmpegHandler).start();
     }
 
     public static void main(String[] args) {

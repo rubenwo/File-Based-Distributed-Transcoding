@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class MasterClientListenerService implements Runnable {
     private boolean isConnected = true;
     private ObjectInputStream fromServer;
+    private ArrayList<String> onlineSlaves = new ArrayList<>();
 
     public MasterClientListenerService(ObjectInputStream fromServer) {
         this.fromServer = fromServer;
@@ -15,15 +16,18 @@ public class MasterClientListenerService implements Runnable {
         System.out.println("Updater service is running.");
         while (isConnected) {
             //Update Listeners
+            System.out.println("Awaiting update...");
             try {
                 byte dataType = fromServer.readByte();
+                System.out.println(dataType);
                 switch (dataType) {
-                    case 0:
-                        //Update something
+                    case 2:
                         try {
-                            ArrayList<String> online = (ArrayList<String>) fromServer.readObject();
-                            for (int i = 0; i < online.size(); i++)
-                                System.out.println(online.get(i));
+                            System.out.println(onlineSlaves.size());
+                            onlineSlaves = (ArrayList<String>) fromServer.readObject();
+                            System.out.println(onlineSlaves.size());
+                            for (String slave : onlineSlaves)
+                                System.out.println(slave);
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
@@ -35,8 +39,8 @@ public class MasterClientListenerService implements Runnable {
         }
     }
 
-    public void setConnected(boolean isConnected) {
-        this.isConnected = isConnected;
+    public void shutdown() {
+        isConnected = false;
     }
 }
 

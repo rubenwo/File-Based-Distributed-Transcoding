@@ -7,7 +7,7 @@ public class SlaveFrame {
 
     public SlaveFrame(String ip) {
         JFrame frame = new JFrame("SlaveFrame");
-        frame.setPreferredSize(new Dimension(300, 125));
+        frame.setPreferredSize(new Dimension(300, 110));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -33,10 +33,13 @@ public class SlaveFrame {
         frame.setVisible(true);
     }
 
-    public void updateCurrentJob(String fileName, double progress) {
-        currentJob.setText("Current Job: " + fileName + "\nProgress:");
+    public void updateCurrentJob(double progress) {
         progressBar.setValue((int) progress);
         progressBar.setString("" + progress + "%");
+    }
+
+    public void setCurrentJobFileName(String fileName) {
+        currentJob.setText("Current Job: " + fileName + "\nProgress:");
     }
 
     public void resetFrame() {

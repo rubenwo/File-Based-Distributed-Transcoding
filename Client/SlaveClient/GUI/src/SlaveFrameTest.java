@@ -5,11 +5,12 @@ public class SlaveFrameTest {
 
     public SlaveFrameTest() {
         SlaveFrame slaveFrame = new SlaveFrame("localhost");
+        slaveFrame.setCurrentJobFileName("TestFile.mkv");
         double progress = 0;
         while (true) {
             try {
-                Thread.sleep(300);
-                slaveFrame.updateCurrentJob("Test File.mkv", progress);
+                Thread.sleep(1000);
+                slaveFrame.updateCurrentJob(progress);
                 progress += 0.5;
             } catch (InterruptedException e) {
                 e.printStackTrace();

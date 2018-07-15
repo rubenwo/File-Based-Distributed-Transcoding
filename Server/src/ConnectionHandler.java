@@ -43,16 +43,17 @@ public class ConnectionHandler implements Runnable {
         switch (clientType) {
             case "MasterClient":
                 System.out.println("A Master client just came online.");
+                clientId = fromClient.readUTF();
                 clientStatusListener.onMasterOnline(this);
                 toClient.writeObject(onlineSlaveIds);
                 toClient.flush();
                 break;
             case "SlaveClient":
                 System.out.println("A slave encoder just came online.");
+                clientId = fromClient.readUTF();
                 clientStatusListener.onSlaveOnline(this);
                 break;
         }
-        clientId = fromClient.readUTF();
     }
 
     @Override
@@ -60,10 +61,11 @@ public class ConnectionHandler implements Runnable {
         System.out.println("Connection Handler is running...");
     }
 
-    public void updateMasterClients() {
+    public void updateMasterClients(ArrayList<String> onlineSlaveIds) {
         System.out.println("Updating Slave client List");
+        System.out.println(onlineSlaveIds.size());
         try {
-            toClient.writeByte(0);
+            toClient.writeByte(2);
             toClient.flush();
             toClient.writeObject(onlineSlaveIds);
             toClient.flush();

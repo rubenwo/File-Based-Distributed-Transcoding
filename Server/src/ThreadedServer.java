@@ -27,8 +27,6 @@ public class ThreadedServer implements Runnable, ClientStatusListener {
 
     @Override
     public void run() {
-        onlineSlaveIds.add("Slave 1");
-        onlineSlaveIds.add("Slave 2");
         while (running) {
             System.out.println(slaveHandlers.size());
             System.out.println(masterHandlers.size());
@@ -48,7 +46,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener {
         slaveHandlers.add(slaveHandler);
         onlineSlaveIds.add(slaveHandler.getClientId());
         for (ConnectionHandler master : masterHandlers)
-            master.updateMasterClients();
+            master.updateMasterClients(onlineSlaveIds);
     }
 
     @Override
@@ -56,7 +54,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener {
         slaveHandlers.removeIf(p -> p.equals(slaveHandler));
         onlineSlaveIds.removeIf(p -> p.equals(slaveHandler.getClientId()));
         for (ConnectionHandler master : masterHandlers)
-            master.updateMasterClients();
+            master.updateMasterClients(onlineSlaveIds);
     }
 
     @Override
