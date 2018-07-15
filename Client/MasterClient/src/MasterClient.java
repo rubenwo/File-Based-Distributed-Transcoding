@@ -4,7 +4,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class MasterClient implements CommandListener {
+public class MasterClient implements CommandListener, SlaveStatusListener {
     public static final int PORT = 9000;
     public static final String HOSTNAME = "localhost";
 
@@ -13,6 +13,8 @@ public class MasterClient implements CommandListener {
     private Socket socket;
     private ObjectOutputStream toServer;
     private ObjectInputStream fromServer;
+
+    private MasterFrame masterFrame;
 
     private MasterClientListenerService clientListenerService;
 
@@ -24,10 +26,10 @@ public class MasterClient implements CommandListener {
         openSocket();
 
         System.out.println("Starting updater service...");
-        clientListenerService = new MasterClientListenerService(fromServer);
+        clientListenerService = new MasterClientListenerService(fromServer, this);
         new Thread(clientListenerService).start();
 
-        new Frame(onlineClients, this);
+        masterFrame = new MasterFrame(onlineClients, this);
     }
 
     private void openSocket() {
@@ -79,6 +81,13 @@ public class MasterClient implements CommandListener {
     @Override
     public void onNoInputSelected() {
         System.out.println("No input selected!");
+    }
+
+    @Override
+    public void onSlaveStatusChanged(ArrayList<String> onlineSlaves) {
+        System.out.println(onlineSlaves.size());
+        this.onlineClients = onlineSlaves;
+        masterFrame.updateClientList(this.onlineClients);
     }
 
     public static void main(String[] args) {

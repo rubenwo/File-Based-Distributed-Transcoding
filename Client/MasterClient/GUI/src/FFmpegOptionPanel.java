@@ -18,13 +18,13 @@ public class FFmpegOptionPanel extends JPanel {
 
     private String[] inputs;
 
-    public FFmpegOptionPanel(Frame frame, CommandListener commandListener) {
+    public FFmpegOptionPanel(MasterFrame masterFrame, CommandListener commandListener) {
         this.setLayout(new BorderLayout());
         this.add(dropDownPanel(), BorderLayout.CENTER);
         JTextField commandLine = new JTextField();
         JButton startEncoding = new JButton("Start Encoding");
         startEncoding.addActionListener(e -> {
-            inputs = frame.getInputs();
+            inputs = masterFrame.getInputs();
             if (inputs != null) {
                 String[] commands = new String[inputs.length];
                 if (!commandLine.getText().isEmpty()) {

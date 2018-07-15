@@ -1,7 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -65,13 +62,8 @@ public class OnlineClientPanel extends JPanel {
         this.add(onlineClientJList);
     }
 
-    public void addClient(String client) {
-        onlineClients.add(client);
-        onlineClientJList.setListData(onlineClients.toArray());
-    }
-
-    public void removeClient(String client) {
-        onlineClients.removeIf(p -> p.equals(client));
-        onlineClientJList.setListData(onlineClients.toArray());
+    public void updateClientList(ArrayList<String> onlineClients) {
+        this.onlineClients = onlineClients;
+        onlineClientJList.setListData(this.onlineClients.toArray());
     }
 }

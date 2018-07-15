@@ -61,13 +61,16 @@ public class ConnectionHandler implements Runnable {
         System.out.println("Connection Handler is running...");
     }
 
-    public void updateMasterClients(ArrayList<String> onlineSlaveIds) {
+    public void updateMasterClients(ArrayList<String> onlineSlaves) {
         System.out.println("Updating Slave client List");
-        System.out.println(onlineSlaveIds.size());
+        System.out.println(onlineSlaves.size());
+        String[] onlineSlavesArray = new String[onlineSlaves.size()];
+        for (int i = 0; i < onlineSlavesArray.length; i++)
+            onlineSlavesArray[i] = onlineSlaves.get(i);
         try {
-            toClient.writeByte(2);
+            toClient.writeByte(0);
             toClient.flush();
-            toClient.writeObject(onlineSlaveIds);
+            toClient.writeObject(onlineSlavesArray);
             toClient.flush();
         } catch (IOException e) {
             e.printStackTrace();

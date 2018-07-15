@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.UUID;
 
 public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     private Socket socket;
@@ -116,6 +117,6 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     }
 
     public static void main(String[] args) {
-        new SlaveClient("New Slave");
+        new SlaveClient("Slave Id: " + UUID.randomUUID().toString());
     }
 }

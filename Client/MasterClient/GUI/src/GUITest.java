@@ -16,7 +16,7 @@ public class GUITest implements CommandListener {
         onlineClients.add("Client 4");
         onlineClients.add("Client 5");
 
-        new Frame(onlineClients, this);
+        new MasterFrame(onlineClients, this);
     }
 
     @Override
