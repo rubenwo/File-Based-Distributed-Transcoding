@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 
-public class SlaveClient implements ProgressListener, FFmpegJobListener {
+public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     private Socket socket;
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
@@ -23,7 +23,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobListener {
         clientListenerService = new SlaveClientListenerService(fromServer, this);
         new Thread(clientListenerService).start();
 
-        slaveFrame = new SlaveFrame();
+        slaveFrame = new SlaveFrame(socket.getInetAddress().toString());
     }
 
     private void openSocket() {
@@ -80,7 +80,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobListener {
     }
 
     @Override
-    public void onProgressUpdate(double progress) {
+    public void onProgressUpdate(String fileName, double progress) {
         try {
             toServer.writeByte(1);
             toServer.flush();
@@ -89,7 +89,12 @@ public class SlaveClient implements ProgressListener, FFmpegJobListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        slaveFrame.updateCurrentJob("Test File.mkv", progress);
+        slaveFrame.updateCurrentJob(fileName, progress);
+    }
+
+    @Override
+    public void onJobDone() {
+
     }
 
     @Override

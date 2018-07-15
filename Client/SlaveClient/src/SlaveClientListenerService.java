@@ -1,16 +1,15 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 
 public class SlaveClientListenerService implements Runnable {
 
     private boolean isConnected = true;
     private ObjectInputStream fromServer;
-    private FFmpegJobListener fFmpegJobListener;
+    private FFmpegJobRequestListener fFmpegJobRequestListener;
 
-    public SlaveClientListenerService(ObjectInputStream fromServer, FFmpegJobListener fFmpegJobListener) {
+    public SlaveClientListenerService(ObjectInputStream fromServer, FFmpegJobRequestListener fFmpegJobRequestListener) {
         this.fromServer = fromServer;
-        this.fFmpegJobListener = fFmpegJobListener;
+        this.fFmpegJobRequestListener = fFmpegJobRequestListener;
     }
 
     @Override
@@ -23,7 +22,7 @@ public class SlaveClientListenerService implements Runnable {
                 switch (dataType) {
                     case 1:
                         String command = fromServer.readUTF();
-                        fFmpegJobListener.onJobRequest(command);
+                        fFmpegJobRequestListener.onJobRequest(command);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

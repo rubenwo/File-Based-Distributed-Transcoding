@@ -1,12 +1,10 @@
-import javax.swing.*;
-
 public class SlaveFrameTest {
     public static void main(String[] args) {
         new SlaveFrameTest();
     }
 
     public SlaveFrameTest() {
-        SlaveFrame slaveFrame = new SlaveFrame();
+        SlaveFrame slaveFrame = new SlaveFrame("localhost");
         double progress = 0;
         while (true) {
             try {

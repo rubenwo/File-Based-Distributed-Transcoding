@@ -3,16 +3,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FFmpegHandler implements Runnable {
     private Process ffmpeg = null;
     private ProgressListener progressListener;
+    private String inputFile;
 
     public FFmpegHandler(OperatingSystem operatingSystem, String command, ProgressListener progressListener) {
         this.progressListener = progressListener;
         String[] commands = command.split(" ");
+        inputFile = commands[1];
         List<String> processCommands = new ArrayList<>();
         processCommands.add(OperatingSystem.getEncoderPath(operatingSystem));
         for (String str : commands)
@@ -52,11 +53,11 @@ public class FFmpegHandler implements Runnable {
 
                     double percent = (double) currentTimeMillis / durationMillis * 100;
                     percent = Math.round(percent * 100.0) / 100.0;
-                    progressListener.onProgressUpdate(percent);
+                    progressListener.onProgressUpdate(inputFile, percent);
                 }
             }
             ffmpeg.waitFor();
-            progressListener.onProgressUpdate(100.0);
+            progressListener.onJobDone();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

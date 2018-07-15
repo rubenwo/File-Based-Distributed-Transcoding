@@ -3,18 +3,29 @@ import java.awt.*;
 
 public class SlaveFrame {
     private JTextArea currentJob;
+    private JProgressBar progressBar;
 
-    public SlaveFrame() {
+    public SlaveFrame(String ip) {
         JFrame frame = new JFrame("SlaveFrame");
-        frame.setPreferredSize(new Dimension(200, 75));
+        frame.setPreferredSize(new Dimension(300, 125));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JPanel contentPane = new JPanel(new BorderLayout());
+
+        JTextArea ipAddress = new JTextArea("IP-Address: " + ip);
+        ipAddress.setEditable(false);
+
         currentJob = new JTextArea();
         currentJob.setEditable(false);
-        currentJob.setText("Current Job: None\nProgress: N/A");
+        currentJob.setText("Current Job: None\nProgress:");
 
-        contentPane.add(currentJob);
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setStringPainted(true);
+        progressBar.setString("N/A");
+
+        contentPane.add(ipAddress, BorderLayout.NORTH);
+        contentPane.add(currentJob, BorderLayout.CENTER);
+        contentPane.add(progressBar, BorderLayout.SOUTH);
 
         frame.setContentPane(contentPane);
         frame.pack();
@@ -23,6 +34,16 @@ public class SlaveFrame {
     }
 
     public void updateCurrentJob(String fileName, double progress) {
-        currentJob.setText("Current Job: " + fileName + "\nProgress: " + progress);
+        currentJob.setText("Current Job: " + fileName + "\nProgress:");
+        progressBar.setValue((int) progress);
+        progressBar.setString("" + progress + "%");
+    }
+
+    public void resetFrame() {
+        //JOptionPane.showMessageDialog(null, "Transcode Job Done!", "Job Done!", JOptionPane.INFORMATION_MESSAGE);
+
+        currentJob.setText("Current Job: None\nProgress:");
+        progressBar.setValue(0);
+        progressBar.setString("N/A");
     }
 }
