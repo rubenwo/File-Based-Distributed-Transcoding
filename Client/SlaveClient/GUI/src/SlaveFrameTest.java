@@ -9,12 +9,15 @@ public class SlaveFrameTest {
         double progress = 0;
         while (true) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(10);
                 slaveFrame.updateCurrentJob(progress);
                 progress += 0.5;
+                if (progress == 100.0)
+                    break;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        slaveFrame.resetFrame();
     }
 }

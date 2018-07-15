@@ -1,18 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class SlaveFrame {
+public class DetailedProgressFrame {
     private JTextArea currentJob;
     private JProgressBar progressBar;
 
-    public SlaveFrame(String ip) {
-        JFrame frame = new JFrame("SlaveFrame");
+    public DetailedProgressFrame(String slaveId) {
+        JFrame frame = new JFrame("Detailed Progress");
         frame.setPreferredSize(new Dimension(350, 110));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JPanel contentPane = new JPanel(new BorderLayout());
 
-        JTextArea ipAddress = new JTextArea("IP-Address: " + ip);
+        JTextArea ipAddress = new JTextArea("Slave ID: " + slaveId);
         ipAddress.setEditable(false);
 
         currentJob = new JTextArea();
@@ -31,22 +31,5 @@ public class SlaveFrame {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
-
-    public void updateCurrentJob(double progress) {
-        progressBar.setValue((int) progress);
-        progressBar.setString("" + progress + "%");
-    }
-
-    public void setCurrentJobFileName(String fileName) {
-        currentJob.setText("Current Job: " + fileName + "\nProgress:");
-    }
-
-    public void resetFrame() {
-        //JOptionPane.showMessageDialog(null, "Transcode Job Done!", "Job Done!", JOptionPane.INFORMATION_MESSAGE);
-
-        currentJob.setText("Current Job: None\nProgress:");
-        progressBar.setValue(0);
-        progressBar.setString("N/A");
     }
 }

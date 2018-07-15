@@ -21,6 +21,7 @@ public class OnlineClientPanel extends JPanel {
             @Override
             public void keyTyped(KeyEvent e) {
                 System.out.println(onlineClientJList.getSelectedValue());
+                new DetailedProgressFrame((String) onlineClientJList.getSelectedValue());
             }
 
             @Override
@@ -37,6 +38,7 @@ public class OnlineClientPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 System.out.println(onlineClientJList.getSelectedValue());
+                new DetailedProgressFrame((String) onlineClientJList.getSelectedValue());
             }
 
             @Override
