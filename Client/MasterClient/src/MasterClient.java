@@ -29,7 +29,7 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
         clientListenerService = new MasterClientListenerService(fromServer, this);
         new Thread(clientListenerService).start();
 
-        masterFrame = new MasterFrame(onlineClients, this);
+        masterFrame = new MasterFrame(onlineClients, this, this);
     }
 
     private void openSocket() {
@@ -95,7 +95,7 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
         try {
             toServer.writeByte(2);
             toServer.flush();
-            toServer.writeUTF(clientId + "," + slaveId);
+            toServer.writeUTF(slaveId);
             toServer.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -104,7 +104,7 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
 
     @Override
     public void onSlaveProgressRequestAvailable(double progress) {
-
+        masterFrame.updateProgressBar(progress);
     }
 
     public static void main(String[] args) {

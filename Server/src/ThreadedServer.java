@@ -31,8 +31,6 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
     @Override
     public void run() {
         while (running) {
-            System.out.println(slaveHandlers.size());
-            System.out.println(masterHandlers.size());
             Socket socket = null;
             try {
                 socket = serverSocket.accept();
@@ -40,7 +38,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Thread(new ConnectionHandler(socket, onlineSlaveIds, this, this)).start();
+            new Thread(new ConnectionHandler(socket, onlineSlaveIds, slaveProgress, this, this)).start();
         }
     }
 
@@ -48,8 +46,11 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
     public void onSlaveOnline(ConnectionHandler slaveHandler) {
         slaveHandlers.add(slaveHandler);
         onlineSlaveIds.add(slaveHandler.getClientId());
-        for (ConnectionHandler master : masterHandlers)
+        slaveProgress.put(slaveHandler.getClientId(), 0.0);
+        for (ConnectionHandler master : masterHandlers) {
             master.updateMasterClients(onlineSlaveIds);
+            master.updateProgressMap(slaveProgress);
+        }
     }
 
     @Override
@@ -78,6 +79,8 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
     @Override
     public void onSlaveProgressAvailable(String slaveId, double progress) {
         slaveProgress.put(slaveId, progress);
+        for (ConnectionHandler master : masterHandlers)
+            master.updateProgressMap(slaveProgress);
     }
 
     public void shutdown() {

@@ -1,11 +1,12 @@
 import java.util.ArrayList;
 
-public class GUITest implements CommandListener {
+public class GUITest implements CommandListener, SlaveStatusListener {
     public static void main(String[] args) {
         new GUITest();
     }
 
     OperatingSystem operatingSystem;
+    private MasterFrame masterFrame;
 
     public GUITest() {
         operatingSystem = OperatingSystem.WINDOWS;
@@ -16,7 +17,7 @@ public class GUITest implements CommandListener {
         onlineClients.add("Client 4");
         onlineClients.add("Client 5");
 
-        new MasterFrame(onlineClients, this);
+        masterFrame = new MasterFrame(onlineClients, this, this);
     }
 
     @Override
@@ -29,5 +30,20 @@ public class GUITest implements CommandListener {
     @Override
     public void onNoInputSelected() {
         System.out.println("No input selected!");
+    }
+
+    @Override
+    public void onSlaveStatusChanged(ArrayList<String> onlineSlaves) {
+
+    }
+
+    @Override
+    public void onSlaveProgressRequest(String slaveId) {
+
+    }
+
+    @Override
+    public void onSlaveProgressRequestAvailable(double progress) {
+        masterFrame.updateProgressBar(progress);
     }
 }

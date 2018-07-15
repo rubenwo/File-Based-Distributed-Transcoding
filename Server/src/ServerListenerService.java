@@ -33,8 +33,8 @@ public class ServerListenerService implements Runnable {
                         slaveProgressListener.onSlaveProgressAvailable(connectionHandler.getClientId(), progress);
                         break;
                     case 2:
-                        String[] ids = connectionHandler.getFromClient().readUTF().split(",");
-
+                        String clientId = connectionHandler.getFromClient().readUTF();
+                        connectionHandler.sendProgress(clientId);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -1,9 +1,11 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ConnectionHandler implements Runnable {
     private ArrayList<String> onlineSlaveIds;
+    private HashMap<String, Double> slaveProgress;
     private Socket socket;
     private ObjectInputStream fromClient;
     private ObjectOutputStream toClient;
@@ -12,10 +14,11 @@ public class ConnectionHandler implements Runnable {
 
     private String clientId;
 
-    public ConnectionHandler(Socket socket, ArrayList<String> onlineSlaveIds, ClientStatusListener clientStatusListener, SlaveProgressListener slaveProgressListener) {
+    public ConnectionHandler(Socket socket, ArrayList<String> onlineSlaveIds, HashMap<String, Double> slaveProgress, ClientStatusListener clientStatusListener, SlaveProgressListener slaveProgressListener) {
         System.out.println("Connection Handler setting up...");
 
         this.socket = socket;
+        this.slaveProgress = slaveProgress;
         this.onlineSlaveIds = onlineSlaveIds;
         this.clientStatusListener = clientStatusListener;
 
@@ -63,7 +66,6 @@ public class ConnectionHandler implements Runnable {
 
     public void updateMasterClients(ArrayList<String> onlineSlaves) {
         System.out.println("Updating Slave client List");
-        System.out.println(onlineSlaves.size());
         String[] onlineSlavesArray = new String[onlineSlaves.size()];
         for (int i = 0; i < onlineSlavesArray.length; i++)
             onlineSlavesArray[i] = onlineSlaves.get(i);
@@ -83,6 +85,24 @@ public class ConnectionHandler implements Runnable {
 
     public ObjectInputStream getFromClient() {
         return fromClient;
+    }
+
+    public void updateProgressMap(HashMap<String, Double> slaveProgress) {
+        this.slaveProgress = slaveProgress;
+        System.out.println(this.slaveProgress.size());
+    }
+
+    public void sendProgress(String clientRequestId) {
+        System.out.println(slaveProgress.size());
+        try {
+            toClient.writeByte(2);
+            toClient.flush();
+            double progress = slaveProgress.get(clientRequestId);
+            toClient.writeDouble(progress);
+            toClient.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendFile(String filename) throws IOException {

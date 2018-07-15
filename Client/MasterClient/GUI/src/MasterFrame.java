@@ -7,14 +7,14 @@ public class MasterFrame {
     private String[] inputs;
     private OnlineClientPanel onlineClientPanel;
 
-    public MasterFrame(ArrayList<String> onlineClients, CommandListener commandListener) {
+    public MasterFrame(ArrayList<String> onlineClients, CommandListener commandListener, SlaveStatusListener slaveStatusListener) {
         JFrame frame = new JFrame("File-Based Distributed Transcoding Master");
         frame.setPreferredSize(new Dimension(1280, 720));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JPanel contentPane = new JPanel(new BorderLayout());
 
-        onlineClientPanel = new OnlineClientPanel(onlineClients);
+        onlineClientPanel = new OnlineClientPanel(onlineClients, slaveStatusListener);
         onlineClientPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
 
         JPanel ffmpegOptionPanel = new FFmpegOptionPanel(this, commandListener);
@@ -76,5 +76,9 @@ public class MasterFrame {
 
     public void updateClientList(ArrayList<String> onlineClients) {
         onlineClientPanel.updateClientList(onlineClients);
+    }
+
+    public void updateProgressBar(double progress) {
+        onlineClientPanel.getDetailedProgressFrame().updateCurrentJob(progress);
     }
 }

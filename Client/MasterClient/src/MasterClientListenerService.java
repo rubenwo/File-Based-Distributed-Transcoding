@@ -33,6 +33,10 @@ public class MasterClientListenerService implements Runnable {
                             e.printStackTrace();
                         }
                         break;
+                    case 2:
+                        double progress = fromServer.readDouble();
+                        slaveStatusListener.onSlaveProgressRequestAvailable(progress);
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

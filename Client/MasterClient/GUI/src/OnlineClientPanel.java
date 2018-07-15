@@ -8,9 +8,14 @@ import java.util.ArrayList;
 public class OnlineClientPanel extends JPanel {
     private ArrayList<String> onlineClients;
     private JList onlineClientJList;
+    private SlaveStatusListener slaveStatusListener;
 
-    public OnlineClientPanel(ArrayList<String> onlineClients) {
+    private DetailedProgressFrame detailedProgressFrame;
+
+
+    public OnlineClientPanel(ArrayList<String> onlineClients, SlaveStatusListener slaveStatusListener) {
         this.onlineClients = onlineClients;
+        this.slaveStatusListener = slaveStatusListener;
         buildClientList();
     }
 
@@ -21,7 +26,10 @@ public class OnlineClientPanel extends JPanel {
             @Override
             public void keyTyped(KeyEvent e) {
                 System.out.println(onlineClientJList.getSelectedValue());
-                new DetailedProgressFrame((String) onlineClientJList.getSelectedValue());
+                if (detailedProgressFrame != null)
+                    detailedProgressFrame.dispose();
+                detailedProgressFrame = new DetailedProgressFrame((String) onlineClientJList.getSelectedValue(), slaveStatusListener);
+                slaveStatusListener.onSlaveProgressRequest((String) onlineClientJList.getSelectedValue());
             }
 
             @Override
@@ -38,7 +46,10 @@ public class OnlineClientPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 System.out.println(onlineClientJList.getSelectedValue());
-                new DetailedProgressFrame((String) onlineClientJList.getSelectedValue());
+                if (detailedProgressFrame != null)
+                    detailedProgressFrame.dispose();
+                detailedProgressFrame = new DetailedProgressFrame((String) onlineClientJList.getSelectedValue(), slaveStatusListener);
+                slaveStatusListener.onSlaveProgressRequest((String) onlineClientJList.getSelectedValue());
             }
 
             @Override
@@ -67,5 +78,9 @@ public class OnlineClientPanel extends JPanel {
     public void updateClientList(ArrayList<String> onlineClients) {
         this.onlineClients = onlineClients;
         onlineClientJList.setListData(this.onlineClients.toArray());
+    }
+
+    public DetailedProgressFrame getDetailedProgressFrame() {
+        return detailedProgressFrame;
     }
 }
