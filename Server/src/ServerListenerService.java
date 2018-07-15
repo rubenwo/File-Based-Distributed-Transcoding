@@ -1,12 +1,14 @@
 import java.io.IOException;
-import java.io.ObjectInputStream;
 
 public class ServerListenerService implements Runnable {
-    private ObjectInputStream fromClient;
+    private ConnectionHandler connectionHandler;
     private boolean isConnected = true;
 
-    public ServerListenerService(ConnectionHandler connectionHandler) {
-        this.fromClient = connectionHandler.getFromClient();
+    private SlaveProgressListener slaveProgressListener;
+
+    public ServerListenerService(ConnectionHandler connectionHandler, SlaveProgressListener slaveProgressListener) {
+        this.connectionHandler = connectionHandler;
+        this.slaveProgressListener = slaveProgressListener;
         System.out.println("Starting Listener updater service...");
     }
 
@@ -15,11 +17,11 @@ public class ServerListenerService implements Runnable {
         System.out.println("Running Listener updater service.");
         while (isConnected) {
             try {
-                byte dataType = fromClient.readByte();
+                byte dataType = connectionHandler.getFromClient().readByte();
                 switch (dataType) {
                     case 0:
                         try {
-                            String[] ffmpegCommands = (String[]) fromClient.readObject();
+                            String[] ffmpegCommands = (String[]) connectionHandler.getFromClient().readObject();
                             for (String command : ffmpegCommands)
                                 System.out.println(command);
                         } catch (ClassNotFoundException e) {
@@ -27,9 +29,12 @@ public class ServerListenerService implements Runnable {
                         }
                         break;
                     case 1:
-                        double progress = fromClient.readDouble();
-                        System.out.println(progress);
+                        double progress = connectionHandler.getFromClient().readDouble();
+                        slaveProgressListener.onSlaveProgressAvailable(connectionHandler.getClientId(), progress);
                         break;
+                    case 2:
+                        String[] ids = connectionHandler.getFromClient().readUTF().split(",");
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();

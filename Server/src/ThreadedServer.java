@@ -3,11 +3,14 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class ThreadedServer implements Runnable, ClientStatusListener {
+public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProgressListener {
     private ArrayList<String> onlineSlaveIds = new ArrayList<>();
     private ArrayList<ConnectionHandler> slaveHandlers = new ArrayList<>();
     private ArrayList<ConnectionHandler> masterHandlers = new ArrayList<>();
+
+    private HashMap<String, Double> slaveProgress = new HashMap<>();
 
     private ServerSocket serverSocket;
 
@@ -37,7 +40,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Thread(new ConnectionHandler(socket, onlineSlaveIds, this)).start();
+            new Thread(new ConnectionHandler(socket, onlineSlaveIds, this, this)).start();
         }
     }
 
@@ -70,6 +73,11 @@ public class ThreadedServer implements Runnable, ClientStatusListener {
     @Override
     public void onError(Error error) {
         error.printStackTrace();
+    }
+
+    @Override
+    public void onSlaveProgressAvailable(String slaveId, double progress) {
+        slaveProgress.put(slaveId, progress);
     }
 
     public void shutdown() {

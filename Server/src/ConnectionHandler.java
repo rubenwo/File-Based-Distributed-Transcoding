@@ -12,7 +12,7 @@ public class ConnectionHandler implements Runnable {
 
     private String clientId;
 
-    public ConnectionHandler(Socket socket, ArrayList<String> onlineSlaveIds, ClientStatusListener clientStatusListener) {
+    public ConnectionHandler(Socket socket, ArrayList<String> onlineSlaveIds, ClientStatusListener clientStatusListener, SlaveProgressListener slaveProgressListener) {
         System.out.println("Connection Handler setting up...");
 
         this.socket = socket;
@@ -22,7 +22,7 @@ public class ConnectionHandler implements Runnable {
         openStreams();
 
         System.out.println("Connection Handler set-up.");
-        new Thread(new ServerListenerService(this)).start();
+        new Thread(new ServerListenerService(this, slaveProgressListener)).start();
     }
 
     private void openStreams() {

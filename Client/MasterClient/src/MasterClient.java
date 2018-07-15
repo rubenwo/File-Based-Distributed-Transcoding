@@ -90,6 +90,23 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
         masterFrame.updateClientList(this.onlineClients);
     }
 
+    @Override
+    public void onSlaveProgressRequest(String slaveId) {
+        try {
+            toServer.writeByte(2);
+            toServer.flush();
+            toServer.writeUTF(clientId + "," + slaveId);
+            toServer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onSlaveProgressRequestAvailable(double progress) {
+
+    }
+
     public static void main(String[] args) {
         new MasterClient("New Master");
     }
