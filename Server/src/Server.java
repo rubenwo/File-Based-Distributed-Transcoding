@@ -11,6 +11,7 @@ public class Server {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+        new ServerGUI();
         new Thread(new ThreadedServer()).start();
     }
 }

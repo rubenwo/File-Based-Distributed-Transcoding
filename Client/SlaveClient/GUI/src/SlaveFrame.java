@@ -9,6 +9,7 @@ public class SlaveFrame {
         JFrame frame = new JFrame("SlaveFrame");
         frame.setPreferredSize(new Dimension(350, 110));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setResizable(false);
 
         JPanel contentPane = new JPanel(new BorderLayout());
 
