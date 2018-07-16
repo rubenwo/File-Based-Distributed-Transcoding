@@ -1,15 +1,19 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class DetailedProgressFrame {
+public class DetailedProgressFrame implements ActionListener {
     private JTextArea currentJob;
     private JProgressBar progressBar;
     private JFrame frame;
 
     private SlaveStatusListener slaveStatusListener;
+    private String slaveId;
 
     public DetailedProgressFrame(String slaveId, SlaveStatusListener slaveStatusListener) {
         this.slaveStatusListener = slaveStatusListener;
+        this.slaveId = slaveId;
         frame = new JFrame("Detailed Progress");
         frame.setPreferredSize(new Dimension(350, 110));
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -34,6 +38,13 @@ public class DetailedProgressFrame {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        new Timer(500, this).start();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        slaveStatusListener.onSlaveProgressRequest(slaveId);
     }
 
     public void updateCurrentJob(double progress) {

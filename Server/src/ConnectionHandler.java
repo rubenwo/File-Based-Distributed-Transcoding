@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 public class ConnectionHandler implements Runnable {
     private ArrayList<String> onlineSlaveIds;
+    private StatusEnum status = StatusEnum.IDLE;
     private HashMap<String, Double> slaveProgress;
     private Socket socket;
     private ObjectInputStream fromClient;
@@ -14,7 +15,7 @@ public class ConnectionHandler implements Runnable {
 
     private String clientId;
 
-    public ConnectionHandler(Socket socket, ArrayList<String> onlineSlaveIds, HashMap<String, Double> slaveProgress, ClientStatusListener clientStatusListener, SlaveProgressListener slaveProgressListener) {
+    public ConnectionHandler(Socket socket, ArrayList<String> onlineSlaveIds, HashMap<String, Double> slaveProgress, ClientStatusListener clientStatusListener, SlaveProgressListener slaveProgressListener, FFmpegCommandListener fFmpegCommandListener) {
         System.out.println("Connection Handler setting up...");
 
         this.socket = socket;
@@ -25,7 +26,7 @@ public class ConnectionHandler implements Runnable {
         openStreams();
 
         System.out.println("Connection Handler set-up.");
-        new Thread(new ServerListenerService(this, slaveProgressListener)).start();
+        new Thread(new ServerListenerService(this, slaveProgressListener, fFmpegCommandListener)).start();
     }
 
     private void openStreams() {
@@ -89,7 +90,6 @@ public class ConnectionHandler implements Runnable {
 
     public void updateProgressMap(HashMap<String, Double> slaveProgress) {
         this.slaveProgress = slaveProgress;
-        System.out.println(this.slaveProgress.size());
     }
 
     public void sendProgress(String clientRequestId) {
@@ -105,7 +105,28 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
-    private void sendFile(String filename) throws IOException {
+    public void sendCommandToSlave(String command) {
+        try {
+            toClient.writeByte(1);
+            toClient.flush();
+            toClient.writeUTF(command);
+            toClient.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public StatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEnum status) {
+        this.status = status;
+    }
+
+    public void sendFile(String filename) throws IOException {
+        toClient.writeByte(3);
+        toClient.flush();
         System.out.println("Sending File: " + filename);
         toClient.writeUTF(filename);
         toClient.flush();

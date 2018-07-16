@@ -6,9 +6,11 @@ public class SlaveClientListenerService implements Runnable {
     private boolean isConnected = true;
     private ObjectInputStream fromServer;
     private FFmpegJobRequestListener fFmpegJobRequestListener;
+    private SlaveClient slaveClient;
 
-    public SlaveClientListenerService(ObjectInputStream fromServer, FFmpegJobRequestListener fFmpegJobRequestListener) {
-        this.fromServer = fromServer;
+    public SlaveClientListenerService(SlaveClient slaveClient, FFmpegJobRequestListener fFmpegJobRequestListener) {
+        this.slaveClient = slaveClient;
+        this.fromServer = slaveClient.getFromServer();
         this.fFmpegJobRequestListener = fFmpegJobRequestListener;
     }
 
@@ -23,6 +25,10 @@ public class SlaveClientListenerService implements Runnable {
                     case 1:
                         String command = fromServer.readUTF();
                         fFmpegJobRequestListener.onJobRequest(command);
+                        break;
+                    case 3:
+                        slaveClient.receiveFile();
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

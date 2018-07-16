@@ -5,7 +5,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProgressListener {
+public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProgressListener, FFmpegCommandListener {
+    private JobDistributingManager distributingManager;
     private ArrayList<String> onlineSlaveIds = new ArrayList<>();
     private ArrayList<ConnectionHandler> slaveHandlers = new ArrayList<>();
     private ArrayList<ConnectionHandler> masterHandlers = new ArrayList<>();
@@ -17,6 +18,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
     private boolean running = true;
 
     public ThreadedServer() {
+        distributingManager = JobDistributingManager.getInstance(slaveHandlers);
         openServerSocket();
     }
 
@@ -38,7 +40,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new Thread(new ConnectionHandler(socket, onlineSlaveIds, slaveProgress, this, this)).start();
+            new Thread(new ConnectionHandler(socket, onlineSlaveIds, slaveProgress, this, this, this)).start();
         }
     }
 
@@ -47,6 +49,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
         slaveHandlers.add(slaveHandler);
         onlineSlaveIds.add(slaveHandler.getClientId());
         slaveProgress.put(slaveHandler.getClientId(), 0.0);
+        distributingManager.updateOnlineSlavesList(slaveHandlers);
         for (ConnectionHandler master : masterHandlers) {
             master.updateMasterClients(onlineSlaveIds);
             master.updateProgressMap(slaveProgress);
@@ -57,6 +60,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
     public void onSlaveOffline(ConnectionHandler slaveHandler) {
         slaveHandlers.removeIf(p -> p.equals(slaveHandler));
         onlineSlaveIds.removeIf(p -> p.equals(slaveHandler.getClientId()));
+        distributingManager.updateOnlineSlavesList(slaveHandlers);
         for (ConnectionHandler master : masterHandlers)
             master.updateMasterClients(onlineSlaveIds);
     }
@@ -81,6 +85,18 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
         slaveProgress.put(slaveId, progress);
         for (ConnectionHandler master : masterHandlers)
             master.updateProgressMap(slaveProgress);
+    }
+
+    @Override
+    public void onCommandsReceived(String[] commands) {
+        String[] inputs = new String[commands.length];
+        for (int i = 0; i < commands.length; i++)
+            inputs[i] = commands[i].split(",")[0];
+        String ffmpegCommand = commands[0].split(",")[1];
+
+        distributingManager.setCommand(ffmpegCommand);
+        distributingManager.setInputs(inputs);
+        distributingManager.distributeJobs();
     }
 
     public void shutdown() {

@@ -8,17 +8,24 @@ import java.util.List;
 public class FFmpegHandler implements Runnable {
     private Process ffmpeg = null;
     private ProgressListener progressListener;
-    private String inputFile;
 
-    public FFmpegHandler(OperatingSystem operatingSystem, String command, ProgressListener progressListener) {
+    public FFmpegHandler(OperatingSystem operatingSystem, String input, String command, String output, ProgressListener progressListener) {
         this.progressListener = progressListener;
+
         String[] commands = command.split(" ");
-        inputFile = commands[1];
+        for (String c : commands)
+            System.out.println(c);
         List<String> processCommands = new ArrayList<>();
         processCommands.add(OperatingSystem.getEncoderPath(operatingSystem));
+        processCommands.add("-i");
+        processCommands.add(input);
         for (String str : commands)
             processCommands.add(str);
-        progressListener.onJobSubmitted(inputFile);
+        processCommands.add(output);
+
+        for (String p : processCommands)
+            System.out.println(p);
+        progressListener.onJobSubmitted(input);
         try {
             ffmpeg = new ProcessBuilder(processCommands).redirectErrorStream(true).start();
         } catch (IOException e) {

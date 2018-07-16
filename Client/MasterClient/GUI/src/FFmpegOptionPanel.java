@@ -26,7 +26,7 @@ public class FFmpegOptionPanel extends JPanel {
         startEncoding.addActionListener(e -> {
             inputs = masterFrame.getInputs();
             if (inputs != null) {
-                String[] commands = new String[inputs.length];
+                String[] commands;
                 if (!commandLine.getText().isEmpty()) {
                     commands = getFfmpegCommandsWithCLI(commandLine.getText());
                     commandListener.onCommandsAvailable(commands);
@@ -130,14 +130,14 @@ public class FFmpegOptionPanel extends JPanel {
     private String[] getFFmpegCommands() {
         String[] commands = new String[inputs.length];
         for (int i = 0; i < inputs.length; i++)
-            commands[i] = "-i " + inputs[i] + " -c:v " + ffmpegCommandMap.get("videoEncoder") + " -preset:v " + ffmpegCommandMap.get("videoPreset") + " -crf " + ffmpegCommandMap.get("crf") + " -c:a " + ffmpegCommandMap.get("audioEncoder") + " -q:a " + ffmpegCommandMap.get("audioBitrate");
+            commands[i] = inputs[i] + "," + "-c:v " + ffmpegCommandMap.get("videoEncoder") + " -preset:v " + ffmpegCommandMap.get("videoPreset") + " -crf " + ffmpegCommandMap.get("crf") + " -c:a " + ffmpegCommandMap.get("audioEncoder") + " -q:a " + ffmpegCommandMap.get("audioBitrate");
         return commands;
     }
 
     private String[] getFfmpegCommandsWithCLI(String flags) {
         String[] commands = new String[inputs.length];
         for (int i = 0; i < inputs.length; i++)
-            commands[i] = "-i " + inputs[i] + flags;
+            commands[i] = inputs[i] + flags;
         return commands;
     }
 

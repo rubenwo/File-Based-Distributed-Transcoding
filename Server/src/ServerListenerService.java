@@ -5,10 +5,12 @@ public class ServerListenerService implements Runnable {
     private boolean isConnected = true;
 
     private SlaveProgressListener slaveProgressListener;
+    private FFmpegCommandListener fFmpegCommandListener;
 
-    public ServerListenerService(ConnectionHandler connectionHandler, SlaveProgressListener slaveProgressListener) {
+    public ServerListenerService(ConnectionHandler connectionHandler, SlaveProgressListener slaveProgressListener, FFmpegCommandListener fFmpegCommandListener) {
         this.connectionHandler = connectionHandler;
         this.slaveProgressListener = slaveProgressListener;
+        this.fFmpegCommandListener = fFmpegCommandListener;
         System.out.println("Starting Listener updater service...");
     }
 
@@ -22,8 +24,7 @@ public class ServerListenerService implements Runnable {
                     case 0:
                         try {
                             String[] ffmpegCommands = (String[]) connectionHandler.getFromClient().readObject();
-                            for (String command : ffmpegCommands)
-                                System.out.println(command);
+                            fFmpegCommandListener.onCommandsReceived(ffmpegCommands);
                         } catch (ClassNotFoundException e) {
                             e.printStackTrace();
                         }
@@ -35,6 +36,7 @@ public class ServerListenerService implements Runnable {
                     case 2:
                         String clientId = connectionHandler.getFromClient().readUTF();
                         connectionHandler.sendProgress(clientId);
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -42,7 +44,7 @@ public class ServerListenerService implements Runnable {
         }
     }
 
-    public void setConnected(boolean isConnected) {
-        this.isConnected = isConnected;
+    public void shutdown() {
+        isConnected = false;
     }
 }
