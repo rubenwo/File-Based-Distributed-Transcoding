@@ -1,4 +1,4 @@
-public class JobDistributer {
+public class JobDistributingManager {
     // Singleton OR Static
     // Map with online encoders(ConnectionHandlers) and status (idle/busy)
     // List with inputs
