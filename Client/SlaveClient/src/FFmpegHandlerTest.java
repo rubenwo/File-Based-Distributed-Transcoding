@@ -7,7 +7,7 @@ public class FFmpegHandlerTest implements ProgressListener {
 
     public FFmpegHandlerTest() {
         OperatingSystem operatingSystem = OperatingSystem.detectOperatingSystem();
-        slaveFrame = new SlaveFrame("localhost");
+        slaveFrame = new SlaveFrame("localhost", "Test clientId");
 
         String command = "-i ./Resources/testFiles/test.mp4 -c:v libx264 -preset:v ultrafast -tune film -c:a copy ./Resources/test.mkv";
 

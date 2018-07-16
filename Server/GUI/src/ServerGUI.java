@@ -3,8 +3,8 @@ import java.awt.*;
 
 public class ServerGUI {
     public ServerGUI() {
-        JFrame frame = new JFrame("SlaveFrame");
-        frame.setPreferredSize(new Dimension(210, 55));
+        JFrame frame = new JFrame("Server");
+        frame.setPreferredSize(new Dimension(210, 75));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);
 

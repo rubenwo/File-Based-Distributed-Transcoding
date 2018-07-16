@@ -5,15 +5,15 @@ public class SlaveFrame {
     private JTextArea currentJob;
     private JProgressBar progressBar;
 
-    public SlaveFrame(String ip) {
+    public SlaveFrame(String ip, String clientId) {
         JFrame frame = new JFrame("SlaveFrame");
-        frame.setPreferredSize(new Dimension(350, 110));
+        frame.setPreferredSize(new Dimension(350, 115));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);
 
         JPanel contentPane = new JPanel(new BorderLayout());
 
-        JTextArea ipAddress = new JTextArea("IP-Address: " + ip);
+        JTextArea ipAddress = new JTextArea(clientId + "\nIP-Address: " + ip);
         ipAddress.setEditable(false);
 
         currentJob = new JTextArea();

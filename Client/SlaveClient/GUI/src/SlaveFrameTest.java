@@ -4,7 +4,7 @@ public class SlaveFrameTest {
     }
 
     public SlaveFrameTest() {
-        SlaveFrame slaveFrame = new SlaveFrame("localhost");
+        SlaveFrame slaveFrame = new SlaveFrame("localhost", "Random ClientId");
         slaveFrame.setCurrentJobFileName("TestFile.mkv");
         double progress = 0;
         while (true) {

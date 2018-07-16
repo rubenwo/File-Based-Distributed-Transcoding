@@ -1,5 +1,4 @@
 import java.io.*;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -30,7 +29,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
         clientListenerService = new SlaveClientListenerService(fromServer, this);
         new Thread(clientListenerService).start();
 
-        slaveFrame = new SlaveFrame(socket.getInetAddress().toString());
+        slaveFrame = new SlaveFrame(socket.getInetAddress().toString(), clientId);
     }
 
     private void openSocket() {
