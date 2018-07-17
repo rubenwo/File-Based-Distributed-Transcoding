@@ -1,5 +1,4 @@
 import java.io.*;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -8,52 +7,54 @@ public class FileTransmitter {
     private DataOutputStream outputStream;
     private DataInputStream inputStream;
 
-    public FileTransmitter(String fileName, int port) {
-        try {
-            String host = InetAddress.getLocalHost().getHostAddress();
-            System.out.println(host);
+    public static void main(String[] args) throws Exception {
+        // create socket
+        ServerSocket servsock = new ServerSocket(13267);
+        while (true) {
+            System.out.println("Waiting...");
 
-            serverSocket = new ServerSocket(port, 0, InetAddress.getByName(host));
-            Socket socket = serverSocket.accept();
-
-            outputStream = new DataOutputStream(socket.getOutputStream());
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream.flush();
-            socket.setSendBufferSize(1024 * 64);
-            socket.setReceiveBufferSize(1024 * 64);
-
-
-            transmit(socket, fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
+            Socket sock = servsock.accept();
+            System.out.println("Accepted connection : " + sock);
+            OutputStream os = sock.getOutputStream();
+            new FileTransmitter().send(os);
+            InputStream is = sock.getInputStream();
+            // new FileTransmitter().receiveFile(is);
+            sock.close();
         }
     }
 
-    private void transmit(Socket socket, String filename) throws IOException {
-        System.out.println("Sending File: " + filename);
-        outputStream.writeUTF(filename);
-        outputStream.flush();
-
-        File file = new File(filename);
-        FileInputStream fileInputStream = new FileInputStream(file);
-        
-        long length = file.length();
-        byte[] bytes = new byte[16 * 1024];
-        InputStream in = new FileInputStream(file);
-        OutputStream out = socket.getOutputStream();
-
-        int count;
-        while ((count = in.read(bytes)) > 0) {
-            out.write(bytes, 0, count);
-        }
-
-        fileInputStream.close();
-        outputStream.flush();
-        System.out.println("Finished sending: " + filename);
+    public void send(OutputStream os) throws Exception {
+        // sendfile
+        File myFile = new File("./Resources/testFiles/test.mp4");
+        byte[] mybytearray = new byte[(int) myFile.length() + 1];
+        FileInputStream fis = new FileInputStream(myFile);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        bis.read(mybytearray, 0, mybytearray.length);
+        System.out.println("Sending...");
+        os.write(mybytearray, 0, mybytearray.length);
+        os.flush();
     }
 
+    public void receiveFile(InputStream is) throws Exception {
+        int filesize = 6022386;
+        int bytesRead;
+        int current = 0;
+        byte[] mybytearray = new byte[filesize];
 
-    public static void main(String[] args) {
-        new FileTransmitter("./Resources/testFiles/test.mp4", 9100);
+        FileOutputStream fos = new FileOutputStream("def");
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        bytesRead = is.read(mybytearray, 0, mybytearray.length);
+        current = bytesRead;
+
+        do {
+            bytesRead = is.read(mybytearray, current,
+                    (mybytearray.length - current));
+            if (bytesRead >= 0)
+                current += bytesRead;
+        } while (bytesRead > -1);
+
+        bos.write(mybytearray, 0, current);
+        bos.flush();
+        bos.close();
     }
 }

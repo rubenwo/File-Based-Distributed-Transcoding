@@ -1,77 +1,57 @@
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.UUID;
 
 public class FileReceiver {
-    private Socket socket;
-    private DataInputStream inputStream;
-    private DataOutputStream outputStream;
+    public static void main(String[] args) throws Exception {
 
-    public FileReceiver(int port) {
-        try {
-            socket = new Socket("192.168.2.41", port);
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream(socket.getOutputStream());
-            outputStream.flush();
-            socket.setReceiveBufferSize(64 * 1024);
-            socket.setSendBufferSize(64 * 1024);
+        long start = System.currentTimeMillis();
 
-            receive();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // localhost for testing
+        Socket sock = new Socket("127.0.0.1", 13267);
+        System.out.println("Connecting...");
+        InputStream is = sock.getInputStream();
+        // receive file
+        new FileReceiver().receiveFile(is);
+        OutputStream os = sock.getOutputStream();
+        //new FileClient().send(os);
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
+
+        sock.close();
     }
 
-    private String createTempDir() throws IOException {
-        Path tempDir = Files.createTempDirectory(UUID.randomUUID().toString());
-        return tempDir.toString() + "/";
+
+    public void send(OutputStream os) throws Exception {
+        // sendfile
+        File myFile = new File("/home/nilesh/opt/eclipse/about.html");
+        byte[] mybytearray = new byte[(int) myFile.length() + 1];
+        FileInputStream fis = new FileInputStream(myFile);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+        bis.read(mybytearray, 0, mybytearray.length);
+        System.out.println("Sending...");
+        os.write(mybytearray, 0, mybytearray.length);
+        os.flush();
     }
 
-    private String getFileExtension(String filename) {
-        try {
-            return filename.substring(filename.lastIndexOf(".") + 1);
-        } catch (Exception e) {
-            return "";
-        }
-    }
+    public void receiveFile(InputStream is) throws Exception {
+        int filesize = 87471087;
+        int bytesRead;
+        int current = 0;
+        byte[] mybytearray = new byte[filesize];
+        FileOutputStream fos = new FileOutputStream("./Resources/test.mp4");
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        bytesRead = is.read(mybytearray, 0, mybytearray.length);
+        current = bytesRead;
 
-    private void receive() throws IOException {
-        String path = createTempDir();
-        System.out.println(path);
+        do {
+            bytesRead = is.read(mybytearray, current,
+                    (mybytearray.length - current));
+            if (bytesRead >= 0)
+                current += bytesRead;
+        } while (bytesRead > -1);
 
-        String filename = inputStream.readUTF();
-        System.out.println("Filename: " + filename);
-        Long fileSize = inputStream.readLong();
-        System.out.println("File size: " + fileSize + "B");
-
-        long chunks = inputStream.readLong();
-        System.out.println("Chunks: " + chunks);
-
-        String fileExtension = getFileExtension(filename);
-
-        String input = path + "Untranscoded." + fileExtension;
-        String output = path + "Transcoded.mkv";
-
-        byte[] buffer = new byte[1024];
-        System.out.println("Receiving file...");
-        FileOutputStream fileOutputStream = new FileOutputStream(new File(input), true);
-        long transferStart = System.currentTimeMillis();
-
-        for (int i = 0; i < chunks; i++) {
-            fileOutputStream.write(buffer, 0, buffer.length);
-        }
-
-        long transferEnd = System.currentTimeMillis();
-        double elapsedTimeInSeconds = (transferEnd - transferStart) * 1000;
-        double transferSpeed = fileSize / elapsedTimeInSeconds;
-        System.out.println(transferSpeed + " MB/s");
-        System.out.println("Finished receiving " + filename);
-        fileOutputStream.close();
-    }
-
-    public static void main(String[] args) {
-        new FileReceiver(9100);
+        bos.write(mybytearray, 0, current);
+        bos.flush();
+        bos.close();
     }
 }
