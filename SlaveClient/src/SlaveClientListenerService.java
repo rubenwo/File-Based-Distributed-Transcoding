@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-public class SlaveClientListenerService implements Runnable {
+public class SlaveClientListenerService extends Thread {
 
     private boolean isConnected = true;
     private ObjectInputStream fromServer;
@@ -27,8 +27,8 @@ public class SlaveClientListenerService implements Runnable {
                         fFmpegJobRequestListener.onJobRequest(command);
                         break;
                     case 3:
+                        isConnected = false;
                         slaveClient.receiveFile();
-                        Thread.yield();
                         break;
                 }
             } catch (IOException e) {
@@ -37,7 +37,12 @@ public class SlaveClientListenerService implements Runnable {
         }
     }
 
-    public void setConnected(boolean isConnected) {
-        this.isConnected = isConnected;
+    public void restart() {
+        isConnected = true;
+        this.start();
+    }
+
+    public void shutdown() {
+        isConnected = false;
     }
 }

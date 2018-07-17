@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/File-Based Distributed Transcoding.iml" filepath="$PROJECT_DIR$/File-Based Distributed Transcoding.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Non-BlockingServerClient/Non-BlockingServerClient.iml" filepath="$PROJECT_DIR$/Non-BlockingServerClient/Non-BlockingServerClient.iml" />
     </modules>
   </component>
 </project>

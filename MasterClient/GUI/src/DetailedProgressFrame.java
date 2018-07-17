@@ -39,7 +39,8 @@ public class DetailedProgressFrame implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        new Timer(500, this).start();
+        Timer timer = new Timer(500, this);
+        timer.start();
     }
 
     @Override

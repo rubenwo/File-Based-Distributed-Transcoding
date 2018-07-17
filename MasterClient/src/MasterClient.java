@@ -117,6 +117,6 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        new MasterClient("192.168.2.103");
+        new MasterClient("192.168.2.125");
     }
 }

@@ -32,7 +32,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
 
         System.out.println("Starting updater service");
         clientListenerService = new SlaveClientListenerService(this, this);
-        new Thread(clientListenerService).start();
+        clientListenerService.start();
 
         slaveFrame = new SlaveFrame(ServerIP, clientId);
     }
@@ -84,36 +84,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     }
 
     public void receiveFile() throws IOException {
-        String path = createTempDir();
-        System.out.println(path);
-
-        String filename = fromServer.readUTF();
-        System.out.println("Filename: " + filename);
-        Long fileSize = fromServer.readLong();
-        System.out.println("File size: " + fileSize + "B");
-
-        String fileExtension = getFileExtension(filename);
-
-        String input = path + "Untranscoded." + fileExtension;
-        String output = path + "Transcoded.mkv";
-
-        byte[] buffer = new byte[1024];
-        System.out.println("Receiving file...");
-        FileOutputStream fileOutputStream = new FileOutputStream(new File(input), true);
-        long bytesRead;
-        long transferStart = System.currentTimeMillis();
-        do {
-            bytesRead = fromServer.read(buffer, 0, buffer.length);
-            fileOutputStream.write(buffer, 0, buffer.length);
-        } while (!(bytesRead < 1024));
-        long transferEnd = System.currentTimeMillis();
-        double elapsedTimeInSeconds = (transferEnd - transferStart) * 1000;
-        double transferSpeed = fileSize / elapsedTimeInSeconds;
-        System.out.println(transferSpeed + " MB/s");
-        System.out.println("Finished receiving " + filename);
-        fileOutputStream.close();
-
-        startEncoding(input, output);
+        new Thread(new ReceiverRunnable()).start();
     }
 
     @Override
@@ -156,6 +127,47 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     }
 
     public static void main(String[] args) {
-        new SlaveClient("192.168.2.103");
+        new SlaveClient("192.168.2.125");
+    }
+
+    class ReceiverRunnable implements Runnable {
+        @Override
+        public void run() {
+            try {
+                String path = createTempDir();
+                System.out.println(path);
+
+                String filename = fromServer.readUTF();
+                System.out.println("Filename: " + filename);
+                Long fileSize = fromServer.readLong();
+                System.out.println("File size: " + fileSize + "B");
+
+                String fileExtension = getFileExtension(filename);
+
+                String input = path + "Untranscoded." + fileExtension;
+                String output = path + "Transcoded.mkv";
+
+                byte[] buffer = new byte[1024];
+                System.out.println("Receiving file...");
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(input), true);
+                long bytesRead;
+                long transferStart = System.currentTimeMillis();
+                do {
+                    bytesRead = fromServer.read(buffer, 0, buffer.length);
+                    fileOutputStream.write(buffer, 0, buffer.length);
+                } while (!(bytesRead < 1024));
+                long transferEnd = System.currentTimeMillis();
+                double elapsedTimeInSeconds = (transferEnd - transferStart) * 1000;
+                double transferSpeed = fileSize / elapsedTimeInSeconds;
+                System.out.println(transferSpeed + " MB/s");
+                System.out.println("Finished receiving " + filename);
+                fileOutputStream.close();
+
+                startEncoding(input, output);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
