@@ -83,7 +83,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
         return tempDir.toString() + "/";
     }
 
-    public void receiveFile() throws IOException {
+    public void receiveFile() {
         new Thread(new ReceiverRunnable()).start();
     }
 
