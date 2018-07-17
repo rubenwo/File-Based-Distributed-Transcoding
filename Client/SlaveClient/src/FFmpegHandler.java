@@ -13,8 +13,6 @@ public class FFmpegHandler implements Runnable {
         this.progressListener = progressListener;
 
         String[] commands = command.split(" ");
-        for (String c : commands)
-            System.out.println(c);
         List<String> processCommands = new ArrayList<>();
         processCommands.add(OperatingSystem.getEncoderPath(operatingSystem));
         processCommands.add("-i");
@@ -22,9 +20,6 @@ public class FFmpegHandler implements Runnable {
         for (String str : commands)
             processCommands.add(str);
         processCommands.add(output);
-
-        for (String p : processCommands)
-            System.out.println(p);
         progressListener.onJobSubmitted(input);
         try {
             ffmpeg = new ProcessBuilder(processCommands).redirectErrorStream(true).start();
