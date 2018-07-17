@@ -17,6 +17,11 @@ public class PreSlaveFrame {
         JLabel ipaddr = new JLabel("Enter the Server IP-Address below:");
         JTextField getIpaddr = new JTextField();
 
+        getIpaddr.addActionListener(e -> {
+            new SlaveClient(getIpaddr.getText());
+            frame.dispose();
+        });
+
         inputForms.add(ipaddr);
         inputForms.add(getIpaddr);
 

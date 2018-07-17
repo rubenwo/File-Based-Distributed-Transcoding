@@ -8,7 +8,7 @@ public class SlaveFrame {
     public SlaveFrame(String ip, String clientId) {
         JFrame frame = new JFrame("SlaveFrame");
         frame.setPreferredSize(new Dimension(350, 115));
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
 
         JPanel contentPane = new JPanel(new BorderLayout());

@@ -6,6 +6,10 @@ public class Server {
     public static String HOSTNAME = "";
 
     public static void main(String[] args) {
+        new Server();
+    }
+
+    public Server() {
         try {
             HOSTNAME = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
