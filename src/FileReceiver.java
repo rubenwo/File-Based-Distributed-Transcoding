@@ -11,10 +11,12 @@ public class FileReceiver {
 
     public FileReceiver(int port) {
         try {
-            socket = new Socket("192.168.2.125", port);
+            socket = new Socket("192.168.2.41", port);
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
             outputStream.flush();
+            socket.setReceiveBufferSize(64 * 1024);
+            socket.setSendBufferSize(64 * 1024);
 
             receive();
         } catch (IOException e) {
@@ -44,6 +46,9 @@ public class FileReceiver {
         Long fileSize = inputStream.readLong();
         System.out.println("File size: " + fileSize + "B");
 
+        long chunks = inputStream.readLong();
+        System.out.println("Chunks: " + chunks);
+
         String fileExtension = getFileExtension(filename);
 
         String input = path + "Untranscoded." + fileExtension;
@@ -52,12 +57,12 @@ public class FileReceiver {
         byte[] buffer = new byte[1024];
         System.out.println("Receiving file...");
         FileOutputStream fileOutputStream = new FileOutputStream(new File(input), true);
-        long bytesRead;
         long transferStart = System.currentTimeMillis();
-        do {
-            bytesRead = inputStream.read(buffer, 0, buffer.length);
+
+        for (int i = 0; i < chunks; i++) {
             fileOutputStream.write(buffer, 0, buffer.length);
-        } while (!(bytesRead < 1024));
+        }
+
         long transferEnd = System.currentTimeMillis();
         double elapsedTimeInSeconds = (transferEnd - transferStart) * 1000;
         double transferSpeed = fileSize / elapsedTimeInSeconds;
