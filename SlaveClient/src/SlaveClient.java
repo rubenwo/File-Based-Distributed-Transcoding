@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
@@ -76,13 +78,15 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
         }
     }
 
+    private String createTempDir() throws IOException {
+        Path tempDir = Files.createTempDirectory(UUID.randomUUID().toString());
+        return tempDir.toString() + "/";
+    }
+
     public void receiveFile() throws IOException {
-        String path = "./Resources/" + ID + "/";
-        boolean success = new File(path).mkdir();
-        if (!success) {
-            System.out.println("Couldn't create the Directory");
-            return;
-        }
+        String path = createTempDir();
+        System.out.println(path);
+
         String filename = fromServer.readUTF();
         System.out.println("Filename: " + filename);
         Long fileSize = fromServer.readLong();

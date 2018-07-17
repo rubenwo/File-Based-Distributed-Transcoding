@@ -32,7 +32,6 @@ public class JobDistributingManager {
             for (ConnectionHandler slave : onlineSlaves) {
                 if (slave.getStatus().equals(StatusEnum.IDLE)) {
                     slave.setStatus(StatusEnum.IN_FILE_TRANSFER);
-                    //new Thread(new Distributor(slave, inputs.get(0), command)).start();
                     dist(slave, inputs.get(0), command);
                     inputs.remove(0);
                 }
@@ -44,7 +43,6 @@ public class JobDistributingManager {
     }
 
     private void dist(ConnectionHandler slave, String filename, String command) {
-        System.out.println("Starting Thread...");
         slave.sendCommandToSlave(command);
         try {
             slave.sendFile(filename);
@@ -52,35 +50,9 @@ public class JobDistributingManager {
             e.printStackTrace();
         }
         slave.setStatus(StatusEnum.ENCODING);
-        System.out.println("Closing Thread!");
     }
 
     public void updateOnlineSlavesList(ArrayList<ConnectionHandler> onlineSlaves) {
         this.onlineSlaves = onlineSlaves;
-    }
-
-    class Distributor implements Runnable {
-        private ConnectionHandler slave;
-        private String filename;
-        private String command;
-
-        public Distributor(ConnectionHandler slave, String filename, String command) {
-            this.slave = slave;
-            this.filename = filename;
-            this.command = command;
-        }
-
-        @Override
-        public void run() {
-            System.out.println("Starting Thread...");
-            slave.sendCommandToSlave(command);
-            try {
-                slave.sendFile(filename);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            slave.setStatus(StatusEnum.ENCODING);
-            System.out.println("Closing Thread!");
-        }
     }
 }
