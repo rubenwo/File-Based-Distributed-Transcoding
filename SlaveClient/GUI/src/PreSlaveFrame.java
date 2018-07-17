@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PreSlaveFrame {
-    // This will ask for Server IP-address AND Server Port number.
-    // Then start the SlaveClient as a Graphical User Interface
     public PreSlaveFrame() {
         JFrame frame = new JFrame("Create an Encoder node");
         frame.setPreferredSize(new Dimension(350, 115));
@@ -38,10 +36,5 @@ public class PreSlaveFrame {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-    }
-
-
-    public static void main(String[] args) {
-        new PreSlaveFrame();
     }
 }
