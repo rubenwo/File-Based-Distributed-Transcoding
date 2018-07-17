@@ -153,6 +153,5 @@ public class ConnectionHandler implements Runnable {
 
         fileInputStream.close();
         System.out.println("Finished sending: " + filename);
-        toClient.flush();
     }
 }
