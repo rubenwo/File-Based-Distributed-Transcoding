@@ -32,7 +32,8 @@ public class JobDistributingManager {
             for (ConnectionHandler slave : onlineSlaves) {
                 if (slave.getStatus().equals(StatusEnum.IDLE)) {
                     slave.setStatus(StatusEnum.IN_FILE_TRANSFER);
-                    new Thread(new Distributor(slave, inputs.get(0), command)).start();
+                    //new Thread(new Distributor(slave, inputs.get(0), command)).start();
+                    dist(slave, inputs.get(0), command);
                     inputs.remove(0);
                 }
                 if (inputs.size() == 0) break;
@@ -40,6 +41,18 @@ public class JobDistributingManager {
         } else {
             System.out.println("There are no slaves online at the moment!");
         }
+    }
+
+    private void dist(ConnectionHandler slave, String filename, String command) {
+        System.out.println("Starting Thread...");
+        slave.sendCommandToSlave(command);
+        try {
+            slave.sendFile(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        slave.setStatus(StatusEnum.ENCODING);
+        System.out.println("Closing Thread!");
     }
 
     public void updateOnlineSlavesList(ArrayList<ConnectionHandler> onlineSlaves) {
