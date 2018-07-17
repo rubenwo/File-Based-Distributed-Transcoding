@@ -79,7 +79,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     }
 
     private String createTempDir() throws IOException {
-        Path tempDir = Files.createTempDirectory(UUID.randomUUID().toString());
+        Path tempDir = Files.createTempDirectory(ID);
         return tempDir.toString() + "/";
     }
 
