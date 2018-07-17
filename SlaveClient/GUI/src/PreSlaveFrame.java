@@ -1,4 +1,42 @@
+import javax.swing.*;
+import java.awt.*;
+
 public class PreSlaveFrame {
     // This will ask for Server IP-address AND Server Port number.
     // Then start the SlaveClient as a Graphical User Interface
+    public PreSlaveFrame() {
+        JFrame frame = new JFrame("Create an Encoder node");
+        frame.setPreferredSize(new Dimension(350, 115));
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+
+        JPanel contentPane = new JPanel(new BorderLayout());
+        JPanel inputForms = new JPanel();
+        inputForms.setLayout(new BoxLayout(inputForms, BoxLayout.Y_AXIS));
+
+        JLabel ipaddr = new JLabel("Enter the Server IP-Address below:");
+        JTextField getIpaddr = new JTextField();
+
+        inputForms.add(ipaddr);
+        inputForms.add(getIpaddr);
+
+        JButton startNode = new JButton("Start Encoder Node");
+        startNode.addActionListener(e -> {
+            new SlaveClient(getIpaddr.getText());
+            frame.dispose();
+        });
+
+        contentPane.add(inputForms, BorderLayout.CENTER);
+        contentPane.add(startNode, BorderLayout.SOUTH);
+
+        frame.setContentPane(contentPane);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+
+    public static void main(String[] args) {
+        new PreSlaveFrame();
+    }
 }
