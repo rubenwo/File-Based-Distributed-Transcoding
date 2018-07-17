@@ -10,12 +10,18 @@ public class FileTransmitter {
 
     public FileTransmitter(String fileName, int port) {
         try {
-            serverSocket = new ServerSocket(port, 0, InetAddress.getByName(InetAddress.getLocalHost().getHostAddress()));
+            String host = InetAddress.getLocalHost().getHostAddress();
+            System.out.println(host);
+
+            serverSocket = new ServerSocket(port, 0, InetAddress.getByName(host));
             Socket socket = serverSocket.accept();
 
             outputStream = new DataOutputStream(socket.getOutputStream());
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream.flush();
+            socket.setSendBufferSize(1024 * 64);
+            socket.setReceiveBufferSize(1024 * 64);
+
 
             transmit(socket, fileName);
         } catch (IOException e) {
@@ -30,22 +36,15 @@ public class FileTransmitter {
 
         File file = new File(filename);
         FileInputStream fileInputStream = new FileInputStream(file);
+        
+        long length = file.length();
+        byte[] bytes = new byte[16 * 1024];
+        InputStream in = new FileInputStream(file);
+        OutputStream out = socket.getOutputStream();
 
-        long fileSize = file.length();
-
-        byte[] buffer = new byte[1024];
-
-        int read;
-
-        outputStream.writeLong(fileSize);
-        outputStream.flush();
-
-        System.out.println("File size: " + fileSize + "B");
-        System.out.println("Buffer size: " + socket.getReceiveBufferSize());
-
-        while ((read = fileInputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, read);
-            outputStream.flush();
+        int count;
+        while ((count = in.read(bytes)) > 0) {
+            out.write(bytes, 0, count);
         }
 
         fileInputStream.close();
