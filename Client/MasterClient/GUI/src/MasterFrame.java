@@ -38,8 +38,9 @@ public class MasterFrame {
         JMenuItem openDirectory = new JMenuItem("Open Directory");
         openDirectory.addActionListener(e -> {
             System.out.println("Clicked open.");
-            //inputs = getInputs(".\\Resources\\testFiles");
-            inputs = getInputs("./Resources/testFiles");
+            openDirectory(openDirectory);
+            for (String str : inputs)
+                System.out.println(str);
         });
         openDirectory.setToolTipText("Choose the directory you wish to transcode.");
         JMenuItem savePreset = new JMenuItem("Save Preset");
@@ -57,6 +58,17 @@ public class MasterFrame {
 
         menuBar.add(file);
         return menuBar;
+    }
+
+    private void openDirectory(JMenuItem item) {
+        JFileChooser fc = new JFileChooser("./Resources");
+        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fc.setDialogTitle("Open Directory");
+        fc.setApproveButtonText("Open");
+        if (fc.showOpenDialog(item) == JFileChooser.APPROVE_OPTION) {
+            inputs = getInputs(fc.getCurrentDirectory().toString());
+        }
+
     }
 
     private String[] getInputs(String path) {
