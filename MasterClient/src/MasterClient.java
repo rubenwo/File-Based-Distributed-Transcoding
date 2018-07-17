@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MasterClient implements CommandListener, SlaveStatusListener {
     public static final int PORT = 9000;
@@ -22,8 +23,9 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
 
     private String clientId;
 
-    public MasterClient(String clientId) {
-        this.clientId = clientId;
+    public MasterClient(String ServerIP) {
+        HOSTNAME = ServerIP;
+        this.clientId = UUID.randomUUID().toString();
 
         openSocket();
 
@@ -115,6 +117,6 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        new MasterClient("New Master");
+        new MasterClient("192.168.2.103");
     }
 }
