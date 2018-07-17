@@ -1,13 +1,13 @@
 public enum OperatingSystem {
-    WINDOWS, MAC, LINUX;
+    WINDOWS, MAC, UNIX;
 
     public static String getEncoderPath(OperatingSystem operatingSystem) {
         if (operatingSystem.equals(WINDOWS))
             return "./Resources/Windows/ffmpeg";
         else if (operatingSystem.equals(MAC))
             return "./Resources/Mac/ffmpeg";
-        else if (operatingSystem.equals(LINUX))
-            return ".//Resources/Linux/ffmpeg";
+        else if (operatingSystem.equals(UNIX))
+            return "./Resources/Unix/ffmpeg";
         else return "This operating system is not supported.";
     }
 
@@ -20,8 +20,8 @@ public enum OperatingSystem {
             operatingSystem = OperatingSystem.WINDOWS;
         } else if (osName.contains("Mac")) {
             operatingSystem = OperatingSystem.MAC;
-        } else if (osName.contains("Linux")) {
-            operatingSystem = OperatingSystem.LINUX;
+        } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
+            operatingSystem = OperatingSystem.UNIX;
         } else {
             operatingSystem = null;
             System.out.println("This operating system is not supported");
