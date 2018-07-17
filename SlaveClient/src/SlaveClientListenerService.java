@@ -28,6 +28,7 @@ public class SlaveClientListenerService implements Runnable {
                         break;
                     case 3:
                         slaveClient.receiveFile();
+                        Thread.yield();
                         break;
                 }
             } catch (IOException e) {
