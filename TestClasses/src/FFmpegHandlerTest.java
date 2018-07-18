@@ -8,7 +8,7 @@ public class FFmpegHandlerTest implements ProgressListener {
     public FFmpegHandlerTest() {
         OperatingSystem operatingSystem = OperatingSystem.detectOperatingSystem();
         slaveFrame = new SlaveFrame("localhost", "Test clientId");
-        String input = "./Resources/testFiles/test.mp4";
+        String input = "./Resources/test_files/big_buck_bunny.mp4";
         String command = "-c:v libx264 -preset:v ultrafast -tune film -c:a copy -c:s copy";
         String output = "./Resources/test.mkv";
 
@@ -32,7 +32,7 @@ public class FFmpegHandlerTest implements ProgressListener {
         System.out.println("Done transcoding!");
         slaveFrame.resetFrame();
     }
-    
+
     @Override
     public void onError(Error error) {
 
