@@ -17,14 +17,14 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
 
     private boolean running = true;
 
-    public ThreadedServer() {
+    public ThreadedServer(String IpAddress) {
         distributingManager = JobDistributingManager.getInstance(slaveHandlers);
-        openServerSocket();
+        openServerSocket(IpAddress);
     }
 
-    private void openServerSocket() {
+    private void openServerSocket(String IpAddress) {
         try {
-            serverSocket = new ServerSocket(Server.PORT, 0, InetAddress.getByName(Server.HOSTNAME));
+            serverSocket = new ServerSocket(Constants.PORT, 0, InetAddress.getByName(IpAddress));
         } catch (IOException e) {
             e.printStackTrace();
         }

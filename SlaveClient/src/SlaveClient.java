@@ -1,14 +1,15 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
 public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, FileReceiverListener {
-    public static final int PORT = 9000;
-    public static String HOSTNAME = "";
+
 
     private Socket socket;
     private ObjectInputStream fromServer;
@@ -26,11 +27,10 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
 
     public SlaveClient(String ServerIP) {
         operatingSystem = OperatingSystem.detectOperatingSystem();
-        HOSTNAME = ServerIP;
         this.ID = UUID.randomUUID().toString();
         this.clientId = "Slave ID: " + ID;
 
-        openSocket();
+        openSocket(ServerIP);
 
         System.out.println("Starting updater service");
         clientListenerService = new SlaveClientListenerService(this, this);
@@ -39,9 +39,9 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         slaveFrame = new SlaveFrame(ServerIP, clientId);
     }
 
-    private void openSocket() {
+    private void openSocket(String HOSTNAME) {
         try {
-            socket = new Socket(SlaveClient.HOSTNAME, SlaveClient.PORT);
+            socket = new Socket(HOSTNAME, Constants.PORT);
             openStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -151,7 +151,11 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     public static void main(String[] args) {
-        new SlaveClient("192.168.2.125");
+        try {
+            new SlaveClient(InetAddress.getLocalHost().getHostAddress());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
 

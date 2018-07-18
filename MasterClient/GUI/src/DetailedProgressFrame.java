@@ -11,6 +11,8 @@ public class DetailedProgressFrame implements ActionListener {
     private SlaveStatusListener slaveStatusListener;
     private String slaveId;
 
+    private Timer timer;
+
     public DetailedProgressFrame(String slaveId, SlaveStatusListener slaveStatusListener) {
         this.slaveStatusListener = slaveStatusListener;
         this.slaveId = slaveId;
@@ -39,8 +41,9 @@ public class DetailedProgressFrame implements ActionListener {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        Timer timer = new Timer(500, this);
+        timer = new Timer(500, this);
         timer.start();
+
     }
 
     @Override
@@ -55,6 +58,7 @@ public class DetailedProgressFrame implements ActionListener {
 
     public void dispose() {
         frame.dispose();
+        timer.stop();
     }
 
     public void setCurrentJobFileName(String fileName) {

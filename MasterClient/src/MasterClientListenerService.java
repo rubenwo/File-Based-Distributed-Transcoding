@@ -18,7 +18,6 @@ public class MasterClientListenerService implements Runnable {
         System.out.println("Updater service is running.");
         while (isConnected) {
             //Update Listeners
-            System.out.println("Awaiting update...");
             try {
                 byte dataType = fromServer.readByte();
                 switch (dataType) {

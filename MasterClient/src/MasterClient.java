@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class MasterClient implements CommandListener, SlaveStatusListener {
-    public static final int PORT = 9000;
-    public static String HOSTNAME = "";
-
     private ArrayList<String> onlineClients;
 
     private Socket socket;
@@ -24,10 +21,9 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
     private String clientId;
 
     public MasterClient(String ServerIP) {
-        HOSTNAME = ServerIP;
         this.clientId = UUID.randomUUID().toString();
 
-        openSocket();
+        openSocket(ServerIP);
 
         System.out.println("Starting updater service...");
         clientListenerService = new MasterClientListenerService(fromServer, this);
@@ -36,9 +32,9 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
         masterFrame = new MasterFrame(onlineClients, this, this);
     }
 
-    private void openSocket() {
+    private void openSocket(String HOSTNAME) {
         try {
-            socket = new Socket(HOSTNAME, PORT);
+            socket = new Socket(HOSTNAME, Constants.PORT);
             openStreams();
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,10 +109,9 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
 
     public static void main(String[] args) {
         try {
-            HOSTNAME = InetAddress.getLocalHost().getHostAddress();
+            new MasterClient(InetAddress.getLocalHost().getHostAddress());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        new MasterClient("192.168.2.125");
     }
 }

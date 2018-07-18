@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ServerGUI {
-    public ServerGUI() {
+    public ServerGUI(String ipAddress) {
         JFrame frame = new JFrame("Server");
         frame.setPreferredSize(new Dimension(210, 75));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -11,7 +11,7 @@ public class ServerGUI {
         JPanel contentPane = new JPanel(new BorderLayout());
 
         JTextArea textArea = new JTextArea();
-        textArea.setText("Server IP-Address: " + Server.HOSTNAME + "\nServer Port: " + Server.PORT);
+        textArea.setText("Server IP-Address: " + ipAddress + "\nServer Port: " + Constants.PORT);
         textArea.setEditable(false);
 
         contentPane.add(textArea, BorderLayout.CENTER);

@@ -140,8 +140,8 @@ public class ConnectionHandler implements Runnable {
     private Object[] config = new Object[3];
 
     public void sendFile(String filename) {
-        int port = Server.PORTS[Server.PORTS_INDEX];
-        Server.PORTS_INDEX++;
+        int port = Constants.PORTS[Constants.PORTS_INDEX];
+        Constants.PORTS_INDEX++;
 
         try {
             toClient.writeByte(3);
