@@ -1,9 +1,13 @@
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, FileReceiverListener {
@@ -139,16 +143,12 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     private String createEncoderPath(String tempDir) {
-        String encoderPath = tempDir + "/ffmpeg" + OperatingSystem.getEncoderExtension(operatingSystem);
+        String encoderPath = tempDir + "ffmpeg" + OperatingSystem.getEncoderExtension(operatingSystem);
         InputStream is = getClass().getResourceAsStream(OperatingSystem.getEncoderPath(operatingSystem));
+        Path path = Paths.get(encoderPath);
         try {
-            OutputStream os = new FileOutputStream(encoderPath);
-            byte[] buffer = new byte[2048];
-            int length;
-            while ((length = is.read(buffer)) != -1)
-                os.write(buffer, 0, length);
-            is.close();
-            os.close();
+            System.out.println("Copying ffmpeg");
+            Files.copy(is, path);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -161,6 +161,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     private void startEncoding(String encoderPath, String input, String output) {
+        System.out.println("Starting encoder...");
         FFmpegHandler ffmpegHandler = new FFmpegHandler(encoderPath, input, ffmpegCommand, output, this);
         new Thread(ffmpegHandler).start();
     }

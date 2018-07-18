@@ -12,6 +12,8 @@ public class FFmpegHandler implements Runnable {
     public FFmpegHandler(String encoderPath, String input, String command, String output, ProgressListener progressListener) {
         this.progressListener = progressListener;
 
+        System.out.println(encoderPath);
+
         String[] commands = command.split(" ");
         List<String> processCommands = new ArrayList<>();
         processCommands.add(encoderPath);
@@ -21,6 +23,8 @@ public class FFmpegHandler implements Runnable {
             processCommands.add(str);
         processCommands.add(output);
         progressListener.onJobSubmitted(input);
+
+        System.out.println("Ffmpeg started!");
         try {
             ffmpeg = new ProcessBuilder(processCommands).redirectErrorStream(true).start();
         } catch (IOException e) {
