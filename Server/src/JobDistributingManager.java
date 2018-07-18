@@ -32,14 +32,19 @@ public class JobDistributingManager {
 
     public void distributeJobs() {
         if (onlineSlaves.size() != 0) {
-            for (ConnectionHandler slave : onlineSlaves) {
-                if (slave.getStatus().equals(StatusEnum.IDLE)) {
-                    slave.setStatus(StatusEnum.IN_FILE_TRANSFER);
-                    dist(slave, inputs.get(0), command);
-                    //new Thread(new Distributor(slave, inputs.get(0))).start();
-                    inputs.remove(0);
+            if (inputs.size() != 0) {
+                for (ConnectionHandler slave : onlineSlaves) {
+                    if (slave.getStatus().equals(StatusEnum.IDLE)) {
+                        slave.setStatus(StatusEnum.IN_FILE_TRANSFER);
+                        dist(slave, inputs.get(0), command);
+                        //new Thread(new Distributor(slave, inputs.get(0))).start();
+                        inputs.remove(0);
+                    }
+                    if (inputs.size() == 0) break;
                 }
-                if (inputs.size() == 0) break;
+            }
+            else {
+                System.out.println("There are no (more) inputs to be transcoded!");
             }
         } else {
             System.out.println("There are no slaves online at the moment!");
