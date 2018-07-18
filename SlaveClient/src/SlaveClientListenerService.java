@@ -27,7 +27,6 @@ public class SlaveClientListenerService extends Thread {
                         fFmpegJobRequestListener.onJobRequest(command);
                         break;
                     case 3:
-                        isConnected = false;
                         slaveClient.receiveFile();
                         break;
                 }
@@ -35,11 +34,6 @@ public class SlaveClientListenerService extends Thread {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void restart() {
-        isConnected = true;
-        this.start();
     }
 
     public void shutdown() {

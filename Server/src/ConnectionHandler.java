@@ -1,4 +1,8 @@
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,35 +128,36 @@ public class ConnectionHandler implements Runnable {
         this.status = status;
     }
 
-    public void sendFile(String filename) throws IOException {
-        toClient.writeByte(3);
-        toClient.flush();
-        System.out.println("Sending File: " + filename);
-        toClient.writeUTF(filename);
-        toClient.flush();
-
-        File file = new File(filename);
-        FileInputStream fileInputStream = new FileInputStream(file);
-
-        long fileSize = file.length();
-
-        byte[] buffer = new byte[1024];
-
-        int read;
-
-        toClient.writeLong(fileSize);
-        toClient.flush();
-
-        System.out.println("File size: " + fileSize + "B");
-        System.out.println("Buffer size: " + socket.getReceiveBufferSize());
-
-        while ((read = fileInputStream.read(buffer)) != -1) {
-            toClient.write(buffer, 0, read);
-            toClient.flush();
+    private String getFileExtension(String filename) {
+        try {
+            return filename.substring(filename.lastIndexOf(".") + 1);
+        } catch (Exception e) {
+            return "";
         }
+    }
 
-        fileInputStream.close();
-        toClient.flush();
-        System.out.println("Finished sending: " + filename);
+    public void sendFile(String filename) {
+        int port = Server.PORTS[Server.PORTS_INDEX];
+        Server.PORTS_INDEX++;
+
+        try {
+            toClient.writeByte(3);
+            toClient.flush();
+            toClient.writeInt(port);
+            toClient.flush();
+
+            File file = new File(filename);
+            toClient.writeLong(file.length());
+            toClient.flush();
+            toClient.writeUTF("." + getFileExtension(filename));
+            toClient.flush();
+            toClient.writeUTF(".mkv");
+            toClient.flush();
+
+            FileSender sender = new FileSender(file.length(), file.getPath(), port, InetAddress.getLocalHost().getHostAddress());
+            new Thread(sender).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
