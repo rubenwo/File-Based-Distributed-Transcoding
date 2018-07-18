@@ -31,7 +31,6 @@ public class FileReceiver implements Runnable {
         this.inputFileExtension = inputFileExtension;
         this.outputFileExtension = outputFileExtension;
 
-        this.socketChannel = createServerSocketChannel();
     }
 
     private String createTempDir() throws IOException {
@@ -42,6 +41,8 @@ public class FileReceiver implements Runnable {
     @Override
     public void run() {
         try {
+            this.socketChannel = createServerSocketChannel();
+
             receiveFile();
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,9 +83,11 @@ public class FileReceiver implements Runnable {
     }
 
     private SocketChannel createServerSocketChannel() throws IOException {
+        System.out.println("Creating serversocket...");
         SocketChannel client = null;
         serverSocket = ServerSocketChannel.open();
         serverSocket.socket().bind(new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), this.port));
+        System.out.println("Bound serverSocket");
         client = serverSocket.accept();
 
         System.out.println("Connection established!");
