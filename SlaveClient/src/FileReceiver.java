@@ -20,6 +20,8 @@ public class FileReceiver implements Runnable {
     private ServerSocketChannel serverSocket;
     private SocketChannel socketChannel;
 
+    private int bufferSize = 32 * 1024;
+
     private String inputFileExtension;
     private String outputFileExtension;
 
@@ -49,6 +51,10 @@ public class FileReceiver implements Runnable {
         }
     }
 
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
+    }
+
     private void receiveFile() throws IOException {
         String tempDirPath = createTempDir();
         System.out.println(tempDirPath);
@@ -58,10 +64,9 @@ public class FileReceiver implements Runnable {
         Path path = Paths.get(input);
         FileChannel fileChannel = FileChannel.open(path, EnumSet.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE));
 
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
 
         double transferSpeed = 0;
-        long size = this.fileSize;
         long start = System.currentTimeMillis();
 
         while ((socketChannel.read(buffer)) > 0) {
@@ -72,7 +77,7 @@ public class FileReceiver implements Runnable {
 
         long end = System.currentTimeMillis();
         long difference = end - start;
-        transferSpeed = (double) size / (difference / 1000);
+        transferSpeed = (double) this.fileSize / (difference / 1000);
 
         System.out.println((transferSpeed / 1000 / 1000) + "MB/s");
         fileChannel.close();

@@ -15,6 +15,8 @@ public class FileSender implements Runnable {
 
     private SocketChannel socketChannel;
 
+    private int bufferSize = 32 * 1024;
+
     public FileSender(long fileSize, String fileName, int port, String clientIp) throws IOException {
         this.fileSize = fileSize;
         this.fileName = fileName;
@@ -33,11 +35,15 @@ public class FileSender implements Runnable {
         }
     }
 
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
+    }
+
     private void sendFile() throws IOException {
         Path path = Paths.get(fileName);
         FileChannel fileChannel = FileChannel.open(path);
 
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
         while (fileChannel.read(buffer) > 0) {
             buffer.flip();
             socketChannel.write(buffer);
