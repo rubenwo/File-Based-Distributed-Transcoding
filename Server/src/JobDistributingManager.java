@@ -42,9 +42,10 @@ public class JobDistributingManager {
                     }
                     if (inputs.size() == 0) break;
                 }
-            }
-            else {
+            } else {
                 System.out.println("There are no (more) inputs to be transcoded!");
+                System.out.println("Resetting PORTS_INDEX to 0");
+                Constants.PORTS_INDEX = 0;
             }
         } else {
             System.out.println("There are no slaves online at the moment!");
