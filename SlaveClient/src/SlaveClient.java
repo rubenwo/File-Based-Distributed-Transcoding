@@ -1,6 +1,4 @@
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -140,13 +138,30 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         }
     }
 
-    @Override
-    public void onFileReceived(String input, String output) {
-        startEncoding(input, output);
+    private String createEncoderPath(String tempDir) {
+        String encoderPath = tempDir + "/ffmpeg" + OperatingSystem.getEncoderExtension(operatingSystem);
+        InputStream is = getClass().getResourceAsStream(OperatingSystem.getEncoderPath(operatingSystem));
+        try {
+            OutputStream os = new FileOutputStream(encoderPath);
+            byte[] buffer = new byte[2048];
+            int length;
+            while ((length = is.read(buffer)) != -1)
+                os.write(buffer, 0, length);
+            is.close();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return encoderPath;
     }
 
-    private void startEncoding(String input, String output) {
-        FFmpegHandler ffmpegHandler = new FFmpegHandler(operatingSystem, input, ffmpegCommand, output, this);
+    @Override
+    public void onFileReceived(String input, String output, String tempDir) {
+        startEncoding(createEncoderPath(tempDir), input, output);
+    }
+
+    private void startEncoding(String encoderPath, String input, String output) {
+        FFmpegHandler ffmpegHandler = new FFmpegHandler(encoderPath, input, ffmpegCommand, output, this);
         new Thread(ffmpegHandler).start();
     }
 

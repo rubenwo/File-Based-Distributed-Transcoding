@@ -9,12 +9,12 @@ public class FFmpegHandler implements Runnable {
     private Process ffmpeg = null;
     private ProgressListener progressListener;
 
-    public FFmpegHandler(OperatingSystem operatingSystem, String input, String command, String output, ProgressListener progressListener) {
+    public FFmpegHandler(String encoderPath, String input, String command, String output, ProgressListener progressListener) {
         this.progressListener = progressListener;
 
         String[] commands = command.split(" ");
         List<String> processCommands = new ArrayList<>();
-        processCommands.add(OperatingSystem.getEncoderPath(operatingSystem));
+        processCommands.add(encoderPath);
         processCommands.add("-i");
         processCommands.add(input);
         for (String str : commands)

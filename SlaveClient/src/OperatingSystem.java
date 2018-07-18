@@ -3,11 +3,11 @@ public enum OperatingSystem {
 
     public static String getEncoderPath(OperatingSystem operatingSystem) {
         if (operatingSystem.equals(WINDOWS))
-            return "./Resources/Windows/ffmpeg";
+            return "./Windows/ffmpeg.exe";
         else if (operatingSystem.equals(MAC))
-            return "./Resources/Mac/ffmpeg";
+            return "./Mac/ffmpeg";
         else if (operatingSystem.equals(UNIX))
-            return "./Resources/Unix/ffmpeg";
+            return "./Unix/ffmpeg";
         else return "This operating system is not supported.";
     }
 
@@ -27,5 +27,15 @@ public enum OperatingSystem {
             System.out.println("This operating system is not supported");
         }
         return operatingSystem;
+    }
+
+    public static String getEncoderExtension(OperatingSystem operatingSystem) {
+        if (operatingSystem.equals(WINDOWS))
+            return ".exe";
+        else if (operatingSystem.equals(MAC))
+            return "";
+        else if (operatingSystem.equals(UNIX))
+            return "";
+        else return "This operating system is not supported.";
     }
 }

@@ -12,7 +12,7 @@ public class FFmpegHandlerTest implements ProgressListener {
         String command = "-c:v libx264 -preset:v ultrafast -tune film -c:a copy -c:s copy";
         String output = "./Resources/test.mkv";
 
-        FFmpegHandler fFmpegHandler = new FFmpegHandler(operatingSystem, input, command, output, this);
+        FFmpegHandler fFmpegHandler = new FFmpegHandler("", input, command, output, this);
         new Thread(fFmpegHandler).start();
     }
 

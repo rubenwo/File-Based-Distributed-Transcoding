@@ -82,7 +82,7 @@ public class FileReceiver implements Runnable {
         System.out.println((transferSpeed / 1000 / 1000) + "MB/s");
         fileChannel.close();
         System.out.println("File Received!");
-        fileReceiverListener.onFileReceived(input, output);
+        fileReceiverListener.onFileReceived(input, output, tempDirPath);
         socketChannel.close();
         serverSocket.close();
     }
