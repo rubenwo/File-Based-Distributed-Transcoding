@@ -6,11 +6,13 @@ public class ServerListenerService implements Runnable {
 
     private SlaveProgressListener slaveProgressListener;
     private FFmpegCommandListener fFmpegCommandListener;
+    private JobDistributingManager distributingManager;
 
     public ServerListenerService(ConnectionHandler connectionHandler, SlaveProgressListener slaveProgressListener, FFmpegCommandListener fFmpegCommandListener) {
         this.connectionHandler = connectionHandler;
         this.slaveProgressListener = slaveProgressListener;
         this.fFmpegCommandListener = fFmpegCommandListener;
+        this.distributingManager = JobDistributingManager.getInstance();
         System.out.println("Starting Listener updater service...");
     }
 
@@ -39,6 +41,11 @@ public class ServerListenerService implements Runnable {
                         break;
                     case 3:
                         connectionHandler.startFileSenderThread();
+                        break;
+                    case 4:
+                        connectionHandler.setStatus(StatusEnum.IDLE);
+                        distributingManager.distributeJobs();
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

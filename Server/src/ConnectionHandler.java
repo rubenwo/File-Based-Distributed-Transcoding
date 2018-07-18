@@ -98,7 +98,6 @@ public class ConnectionHandler implements Runnable {
     }
 
     public void sendProgress(String clientRequestId) {
-        System.out.println(slaveProgress.size());
         try {
             toClient.writeByte(2);
             toClient.flush();

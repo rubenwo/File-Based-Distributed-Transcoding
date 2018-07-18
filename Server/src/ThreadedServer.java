@@ -18,7 +18,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
     private boolean running = true;
 
     public ThreadedServer(String IpAddress) {
-        distributingManager = JobDistributingManager.getInstance(slaveHandlers);
+        distributingManager = new JobDistributingManager(slaveHandlers);
         openServerSocket(IpAddress);
     }
 

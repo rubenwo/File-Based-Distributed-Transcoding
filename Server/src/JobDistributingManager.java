@@ -3,9 +3,9 @@ import java.util.ArrayList;
 public class JobDistributingManager {
     private static JobDistributingManager instance = null;
 
-    public static JobDistributingManager getInstance(ArrayList<ConnectionHandler> onlineSlaves) {
+    public static JobDistributingManager getInstance() {
         if (instance == null)
-            instance = new JobDistributingManager(onlineSlaves);
+            throw new IllegalStateException("Manager never initialized!");
         return instance;
     }
 
@@ -13,8 +13,12 @@ public class JobDistributingManager {
     private ArrayList<String> inputs = new ArrayList<>();
     private String command;
 
-    private JobDistributingManager(ArrayList<ConnectionHandler> onlineSlaves) {
+    public JobDistributingManager(ArrayList<ConnectionHandler> onlineSlaves) {
         this.onlineSlaves = onlineSlaves;
+        instance = this;
+    }
+
+    private JobDistributingManager() {
     }
 
     public void setInputs(String[] inputs) {
@@ -27,7 +31,7 @@ public class JobDistributingManager {
     }
 
     public void distributeJobs() {
-        if (onlineSlaves.size() > 0) {
+        if (onlineSlaves.size() != 0) {
             for (ConnectionHandler slave : onlineSlaves) {
                 if (slave.getStatus().equals(StatusEnum.IDLE)) {
                     slave.setStatus(StatusEnum.IN_FILE_TRANSFER);

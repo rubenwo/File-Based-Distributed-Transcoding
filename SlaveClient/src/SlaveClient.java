@@ -116,10 +116,27 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         slaveFrame.updateCurrentJob(progress);
     }
 
+    private void returnTranscodedFile() {
+        System.out.println("Returning file...");
+    }
+
+    private void doCleanUp() {
+        System.out.println("Cleaning up temp directory...");
+    }
+
     @Override
     public void onJobDone() {
         System.out.println("Done transcoding!");
+        System.out.println("Resetting frame...");
         slaveFrame.resetFrame();
+        returnTranscodedFile();
+        doCleanUp();
+        try {
+            toServer.writeByte(4);
+            toServer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -143,12 +160,12 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     private String createEncoderPath(String tempDir) {
-        String encoderPath = tempDir + "ffmpeg";// + OperatingSystem.getEncoderExtension(operatingSystem);
-        InputStream is = getClass().getResourceAsStream(OperatingSystem.getEncoderPath(operatingSystem));
+        String encoderPath = tempDir + "ffmpeg";
+        InputStream ffmpegLoader = getClass().getResourceAsStream(OperatingSystem.getEncoderPath(operatingSystem));
         Path path = Paths.get(encoderPath);
         try {
-            System.out.println("Copying ffmpeg");
-            Files.copy(is, path);
+            System.out.println("Copying ffmpeg to temp dir...");
+            Files.copy(ffmpegLoader, path);
         } catch (IOException e) {
             e.printStackTrace();
         }
