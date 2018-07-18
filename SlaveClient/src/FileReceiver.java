@@ -16,14 +16,16 @@ public class FileReceiver implements Runnable {
     private int port;
     private String ID;
 
+    private FileReceiverListener fileReceiverListener;
     private ServerSocketChannel serverSocket;
     private SocketChannel socketChannel;
 
     private String inputFileExtension;
     private String outputFileExtension;
 
-    public FileReceiver(String ID, long fileSize, int port, String inputFileExtension, String outputFileExtension) throws IOException {
+    public FileReceiver(String ID, long fileSize, int port, String inputFileExtension, String outputFileExtension, FileReceiverListener fileReceiverListener) throws IOException {
         this.ID = ID;
+        this.fileReceiverListener = fileReceiverListener;
         this.fileSize = fileSize;
         this.port = port;
         this.inputFileExtension = inputFileExtension;
@@ -74,6 +76,7 @@ public class FileReceiver implements Runnable {
         System.out.println((transferSpeed / 1000 / 1000) + "MB/s");
         fileChannel.close();
         System.out.println("File Received!");
+        fileReceiverListener.onFileReceived(input, output);
         socketChannel.close();
         serverSocket.close();
     }

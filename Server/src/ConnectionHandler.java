@@ -154,8 +154,8 @@ public class ConnectionHandler implements Runnable {
             toClient.writeUTF(".mkv");
             toClient.flush();
 
-            FileSender sender = new FileSender(file.length(), file.getPath(), port, InetAddress.getLocalHost().getHostAddress());
-            new Thread(sender).start();
+            new Thread(new FileSender(file.length(), file.getPath(), port, InetAddress.getLocalHost().getHostAddress())).start();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

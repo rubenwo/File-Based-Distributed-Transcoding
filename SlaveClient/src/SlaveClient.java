@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
-public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
+public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, FileReceiverListener {
     public static final int PORT = 9000;
     public static String HOSTNAME = "";
 
@@ -73,7 +73,6 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     }
 
 
-
     private String createTempDir() throws IOException {
         Path tempDir = Files.createTempDirectory(ID);
         return tempDir.toString() + "/";
@@ -88,9 +87,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
             String inputFileExtension = fromServer.readUTF();
             String outputFilesExtension = fromServer.readUTF();
 
-            FileReceiver receiver = new FileReceiver(UUID.randomUUID().toString(), fileSize, port, inputFileExtension, outputFilesExtension);
-
-            new Thread(receiver).start();
+            new Thread(new FileReceiver(UUID.randomUUID().toString(), fileSize, port, inputFileExtension, outputFilesExtension, this)).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -129,6 +126,11 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener {
     @Override
     public void onJobRequest(String command) {
         this.ffmpegCommand = command;
+    }
+
+    @Override
+    public void onFileReceived(String input, String output) {
+        startEncoding(input, output);
     }
 
     private void startEncoding(String input, String output) {
