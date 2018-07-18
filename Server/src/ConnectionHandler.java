@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ public class ConnectionHandler implements Runnable {
     private ClientStatusListener clientStatusListener;
 
     private String clientId;
+    private String clientIP;
 
     public ConnectionHandler(Socket socket, ArrayList<String> onlineSlaveIds, HashMap<String, Double> slaveProgress, ClientStatusListener clientStatusListener, SlaveProgressListener slaveProgressListener, FFmpegCommandListener fFmpegCommandListener) {
         System.out.println("Connection Handler setting up...");
@@ -59,6 +59,7 @@ public class ConnectionHandler implements Runnable {
             case "SlaveClient":
                 System.out.println("A slave encoder just came online.");
                 clientId = fromClient.readUTF();
+                clientIP = fromClient.readUTF();
                 clientStatusListener.onSlaveOnline(this);
                 break;
         }
@@ -154,7 +155,7 @@ public class ConnectionHandler implements Runnable {
             toClient.writeUTF(".mkv");
             toClient.flush();
 
-            new Thread(new FileSender(file.length(), file.getPath(), port, InetAddress.getLocalHost().getHostAddress())).start();
+            new Thread(new FileSender(file.length(), file.getPath(), port, this.clientIP)).start();
 
         } catch (IOException e) {
             e.printStackTrace();
