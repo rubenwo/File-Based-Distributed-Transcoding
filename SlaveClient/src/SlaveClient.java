@@ -25,7 +25,11 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     private String ID;
     private String clientId;
 
+    private String tempDir;
+
     private String ffmpegCommand;
+    private String inputFileExtension;
+    private String outputFileExtension;
 
     public SlaveClient(String ServerIP) {
         operatingSystem = OperatingSystem.detectOperatingSystem();
@@ -33,6 +37,14 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         this.clientId = "Slave ID: " + ID;
 
         openSocket(ServerIP);
+
+        System.out.println("Creating temporary directory");
+        try {
+            tempDir = createTempDir();
+            createEncoder();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("Starting updater service");
         clientListenerService = new SlaveClientListenerService(this, this);
@@ -72,31 +84,28 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         toServer.flush();
     }
 
+    private String createTempDir() throws IOException {
+        Path tempDir = Files.createTempDirectory(this.ID);
+        return tempDir.toString() + "/";
+    }
+
     public ObjectInputStream getFromServer() {
         return fromServer;
     }
 
-
-    private String createTempDir() throws IOException {
-        Path tempDir = Files.createTempDirectory(ID);
-        return tempDir.toString() + "/";
-    }
-
     public void receiveFile() {
-
         try {
             int port = fromServer.readInt();
             long fileSize = fromServer.readLong();
 
-            String inputFileExtension = fromServer.readUTF();
-            String outputFilesExtension = fromServer.readUTF();
+            inputFileExtension = fromServer.readUTF();
+            outputFileExtension = fromServer.readUTF();
 
-            new Thread(new FileReceiver(UUID.randomUUID().toString(), fileSize, port, inputFileExtension, outputFilesExtension, this)).start();
+            new Thread(new FileReceiver(fileSize, port, inputFileExtension, outputFileExtension, this, this.tempDir)).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void onJobSubmitted(String fileName) {
@@ -120,8 +129,13 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         System.out.println("Returning file...");
     }
 
-    private void doCleanUp() {
+    private void doCleanUp() throws IOException {
         System.out.println("Cleaning up temp directory...");
+        Path untranscoded = Paths.get(tempDir + "Untranscoded" + inputFileExtension);
+        Path transcoded = Paths.get(tempDir + "Transcoded" + outputFileExtension);
+
+        Files.delete(untranscoded);
+        Files.delete(transcoded);
     }
 
     @Override
@@ -130,8 +144,9 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         System.out.println("Resetting frame...");
         slaveFrame.resetFrame();
         returnTranscodedFile();
-        doCleanUp();
         try {
+            doCleanUp();
+
             toServer.writeByte(4);
             toServer.flush();
         } catch (IOException e) {
@@ -159,7 +174,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         }
     }
 
-    private String createEncoderPath(String tempDir) {
+    private void createEncoder() {
         String encoderPath = tempDir + "ffmpeg";
         InputStream ffmpegLoader = getClass().getResourceAsStream(OperatingSystem.getEncoderPath(operatingSystem));
         Path path = Paths.get(encoderPath);
@@ -169,12 +184,12 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return encoderPath;
     }
 
     @Override
-    public void onFileReceived(String input, String output, String tempDir) {
-        startEncoding(createEncoderPath(tempDir), input, output);
+    public void onFileReceived(String input, String output) {
+        String encoderPath = tempDir + "ffmpeg";
+        startEncoding(encoderPath, input, output);
     }
 
     private void startEncoding(String encoderPath, String input, String output) {

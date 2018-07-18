@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -14,7 +13,6 @@ import java.util.EnumSet;
 public class FileReceiver implements Runnable {
     private long fileSize;
     private int port;
-    private String ID;
 
     private FileReceiverListener fileReceiverListener;
     private ServerSocketChannel serverSocket;
@@ -22,23 +20,20 @@ public class FileReceiver implements Runnable {
 
     private int bufferSize = 32 * 1024;
 
+    private String tempDir;
     private String inputFileExtension;
     private String outputFileExtension;
 
-    public FileReceiver(String ID, long fileSize, int port, String inputFileExtension, String outputFileExtension, FileReceiverListener fileReceiverListener) throws IOException {
-        this.ID = ID;
+
+    public FileReceiver(long fileSize, int port, String inputFileExtension, String outputFileExtension, FileReceiverListener fileReceiverListener, String tempDir) throws IOException {
         this.fileReceiverListener = fileReceiverListener;
         this.fileSize = fileSize;
         this.port = port;
         this.inputFileExtension = inputFileExtension;
         this.outputFileExtension = outputFileExtension;
-
+        this.tempDir = tempDir;
     }
 
-    private String createTempDir() throws IOException {
-        Path tempDir = Files.createTempDirectory(this.ID);
-        return tempDir.toString() + "/";
-    }
 
     @Override
     public void run() {
@@ -56,10 +51,9 @@ public class FileReceiver implements Runnable {
     }
 
     private void receiveFile() throws IOException {
-        String tempDirPath = createTempDir();
-        System.out.println(tempDirPath);
-        String input = tempDirPath + "Untranscoded" + inputFileExtension;
-        String output = tempDirPath + "Transcoded" + outputFileExtension;
+        System.out.println(tempDir);
+        String input = tempDir + "Untranscoded" + inputFileExtension;
+        String output = tempDir + "Transcoded" + outputFileExtension;
 
         Path path = Paths.get(input);
         FileChannel fileChannel = FileChannel.open(path, EnumSet.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE));
@@ -82,7 +76,7 @@ public class FileReceiver implements Runnable {
         System.out.println((transferSpeed / 1000 / 1000) + "MB/s");
         fileChannel.close();
         System.out.println("File Received!");
-        fileReceiverListener.onFileReceived(input, output, tempDirPath);
+        fileReceiverListener.onFileReceived(input, output);
         socketChannel.close();
         serverSocket.close();
     }

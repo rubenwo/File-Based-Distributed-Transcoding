@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 public class TestFileReceive implements FileReceiverListener {
     public static void main(String[] args) throws IOException {
@@ -11,7 +10,7 @@ public class TestFileReceive implements FileReceiverListener {
         int port = 9001;
 
         File file = new File("./Resources/testFiles/test.mp4");
-        FileReceiver receiver = new FileReceiver(UUID.randomUUID().toString(), file.length(), port, ".mp4", ".mov", this);
+        FileReceiver receiver = new FileReceiver(file.length(), port, ".mp4", ".mov", this, null);
 
         new Thread(receiver).start();
     }
@@ -22,7 +21,7 @@ public class TestFileReceive implements FileReceiverListener {
     }
 
     @Override
-    public void onFileReceived(String input, String output, String tempDir) {
+    public void onFileReceived(String input, String output) {
 
     }
 }
