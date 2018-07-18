@@ -12,11 +12,11 @@
       <sourceFolder url="file://$MODULE_DIR$/SlaveClient/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TestClasses/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/Resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/FileTransfer/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/FileTransfer/Receiver/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/FileTransfer/Sender/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/FileTransfer/Test/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Resources" type="java-resource" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
