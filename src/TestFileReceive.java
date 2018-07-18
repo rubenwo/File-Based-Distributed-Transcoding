@@ -17,6 +17,11 @@ public class TestFileReceive implements FileReceiverListener {
     }
 
     @Override
+    public void onSocketBound() {
+
+    }
+
+    @Override
     public void onFileReceived(String input, String output) {
         System.out.println("File Received!");
     }

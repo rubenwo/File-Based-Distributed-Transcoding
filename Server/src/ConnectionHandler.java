@@ -137,6 +137,8 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
+    private Object[] config = new Object[3];
+
     public void sendFile(String filename) {
         int port = Server.PORTS[Server.PORTS_INDEX];
         Server.PORTS_INDEX++;
@@ -154,12 +156,22 @@ public class ConnectionHandler implements Runnable {
             toClient.flush();
             toClient.writeUTF(".mkv");
             toClient.flush();
-            System.out.println(this.clientIP);
 
-            new Thread(new FileSender(file.length(), file.getPath(), port, this.clientIP)).start();
+            config[0] = file.length();
+            config[1] = file.getPath();
+            config[2] = port;
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void startFileSenderThread() {
+        try {
+            new Thread(new FileSender((long) config[0], (String) config[1], (int) config[2], this.clientIP)).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

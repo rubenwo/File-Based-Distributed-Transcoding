@@ -131,6 +131,16 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     @Override
+    public void onSocketBound() {
+        try {
+            toServer.writeByte(3);
+            toServer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void onFileReceived(String input, String output) {
         startEncoding(input, output);
     }

@@ -37,6 +37,8 @@ public class ServerListenerService implements Runnable {
                         String clientId = connectionHandler.getFromClient().readUTF();
                         connectionHandler.sendProgress(clientId);
                         break;
+                    case 3:
+                        connectionHandler.startFileSenderThread();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

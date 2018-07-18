@@ -87,8 +87,10 @@ public class FileReceiver implements Runnable {
         SocketChannel client = null;
         serverSocket = ServerSocketChannel.open();
         System.out.println("serverSocket opened");
+        System.out.println(this.port);
         serverSocket.socket().bind(new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), this.port));
         System.out.println("Bound serverSocket");
+        fileReceiverListener.onSocketBound();
         client = serverSocket.accept();
 
         System.out.println("Connection established!");
