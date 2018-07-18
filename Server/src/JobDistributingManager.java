@@ -1,11 +1,12 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class JobDistributingManager {
     private static JobDistributingManager instance = null;
 
     public static JobDistributingManager getInstance() {
         if (instance == null)
-            throw new IllegalStateException("Manager never initialized!");
+            throw new IllegalStateException("Manager was never initialized!");
         return instance;
     }
 
@@ -18,12 +19,8 @@ public class JobDistributingManager {
         instance = this;
     }
 
-    private JobDistributingManager() {
-    }
-
     public void setInputs(String[] inputs) {
-        for (String input : inputs)
-            this.inputs.add(input);
+        Collections.addAll(this.inputs, inputs);
     }
 
     public void setCommand(String command) {
@@ -36,8 +33,7 @@ public class JobDistributingManager {
                 for (ConnectionHandler slave : onlineSlaves) {
                     if (slave.getStatus().equals(StatusEnum.IDLE)) {
                         slave.setStatus(StatusEnum.IN_FILE_TRANSFER);
-                        dist(slave, inputs.get(0), command);
-                        //new Thread(new Distributor(slave, inputs.get(0))).start();
+                        distribute(slave, inputs.get(0), command);
                         inputs.remove(0);
                     }
                     if (inputs.size() == 0) break;
@@ -52,11 +48,9 @@ public class JobDistributingManager {
         }
     }
 
-    private void dist(ConnectionHandler slave, String filename, String command) {
+    private void distribute(ConnectionHandler slave, String filename, String command) {
         slave.sendCommandToSlave(command);
-
         slave.sendFile(filename);
-
         slave.setStatus(StatusEnum.ENCODING);
     }
 

@@ -28,8 +28,8 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     private String tempDir;
 
     private String ffmpegCommand;
-    private String inputFileExtension;
-    private String outputFileExtension;
+    private String inputFile;
+    private String outputFile;
 
     public SlaveClient(String ServerIP) {
         operatingSystem = OperatingSystem.detectOperatingSystem();
@@ -98,10 +98,12 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
             int port = fromServer.readInt();
             long fileSize = fromServer.readLong();
 
-            inputFileExtension = fromServer.readUTF();
-            outputFileExtension = fromServer.readUTF();
+            inputFile = fromServer.readUTF();
+            String outputFileExtension = fromServer.readUTF();
 
-            new Thread(new FileReceiver(fileSize, port, inputFileExtension, outputFileExtension, this, this.tempDir)).start();
+            outputFile = "transcoded_" + inputFile.substring(0, inputFile.lastIndexOf(".")) + outputFileExtension;
+
+            new Thread(new FileReceiver(fileSize, port, inputFile, outputFile, this, this.tempDir)).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -126,13 +128,13 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     private void returnTranscodedFile() {
-        System.out.println("Returning file...");
+        System.out.println("Returning file: " + tempDir + outputFile);
     }
 
     private void doCleanUp() throws IOException {
         System.out.println("Cleaning up temp directory...");
-        Path untranscoded = Paths.get(tempDir + "Untranscoded" + inputFileExtension);
-        Path transcoded = Paths.get(tempDir + "Transcoded" + outputFileExtension);
+        Path untranscoded = Paths.get(tempDir + inputFile);
+        Path transcoded = Paths.get(tempDir + outputFile);
 
         Files.delete(untranscoded);
         Files.delete(transcoded);

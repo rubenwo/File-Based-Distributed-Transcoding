@@ -149,9 +149,10 @@ public class ConnectionHandler implements Runnable {
             toClient.flush();
 
             File file = new File(filename);
+
             toClient.writeLong(file.length());
             toClient.flush();
-            toClient.writeUTF("." + getFileExtension(filename));
+            toClient.writeUTF(file.getName());
             toClient.flush();
             toClient.writeUTF(".mkv");
             toClient.flush();

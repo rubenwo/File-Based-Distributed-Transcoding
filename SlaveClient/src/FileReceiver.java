@@ -21,16 +21,16 @@ public class FileReceiver implements Runnable {
     private int bufferSize = 32 * 1024;
 
     private String tempDir;
-    private String inputFileExtension;
-    private String outputFileExtension;
+    private String inputFile;
+    private String outputFile;
 
 
-    public FileReceiver(long fileSize, int port, String inputFileExtension, String outputFileExtension, FileReceiverListener fileReceiverListener, String tempDir) throws IOException {
+    public FileReceiver(long fileSize, int port, String inputFile, String outputFile, FileReceiverListener fileReceiverListener, String tempDir) throws IOException {
         this.fileReceiverListener = fileReceiverListener;
         this.fileSize = fileSize;
         this.port = port;
-        this.inputFileExtension = inputFileExtension;
-        this.outputFileExtension = outputFileExtension;
+        this.inputFile = inputFile;
+        this.outputFile = outputFile;
         this.tempDir = tempDir;
     }
 
@@ -39,7 +39,6 @@ public class FileReceiver implements Runnable {
     public void run() {
         try {
             this.socketChannel = createServerSocketChannel();
-
             receiveFile();
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,8 +51,8 @@ public class FileReceiver implements Runnable {
 
     private void receiveFile() throws IOException {
         System.out.println(tempDir);
-        String input = tempDir + "Untranscoded" + inputFileExtension;
-        String output = tempDir + "Transcoded" + outputFileExtension;
+        String input = tempDir + inputFile;
+        String output = tempDir + outputFile;
 
         Path path = Paths.get(input);
         FileChannel fileChannel = FileChannel.open(path, EnumSet.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE));
