@@ -7,7 +7,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FileSender implements Runnable{
+public class FileSender implements Runnable {
     private long fileSize;
     private String fileName;
     private int port;
@@ -47,6 +47,7 @@ public class FileSender implements Runnable{
     }
 
     private SocketChannel createChannel() throws IOException {
+        System.out.println(this.port);
         SocketChannel socketChannel = SocketChannel.open();
         SocketAddress socketAddress = new InetSocketAddress(this.clientIp, this.port);
         socketChannel.connect(socketAddress);
