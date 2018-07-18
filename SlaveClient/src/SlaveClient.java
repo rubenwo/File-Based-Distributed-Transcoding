@@ -143,7 +143,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     private String createEncoderPath(String tempDir) {
-        String encoderPath = tempDir + "ffmpeg" + OperatingSystem.getEncoderExtension(operatingSystem);
+        String encoderPath = tempDir + "ffmpeg";// + OperatingSystem.getEncoderExtension(operatingSystem);
         InputStream is = getClass().getResourceAsStream(OperatingSystem.getEncoderPath(operatingSystem));
         Path path = Paths.get(encoderPath);
         try {
