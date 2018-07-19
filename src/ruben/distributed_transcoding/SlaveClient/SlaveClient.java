@@ -11,10 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -236,8 +233,8 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         long start = System.currentTimeMillis();
 
         Path path = Paths.get(encoderPath);
-        System.out.println(getClass().getResource("/Windows/ffmpeg.exe"));
-        Path ffmpegPath = Paths.get(getClass().getResource(OperatingSystem.getEncoderPath(operatingSystem)).toURI());
+        URL ffmpegURL = getClass().getResource(OperatingSystem.getEncoderPath(operatingSystem));
+        Path ffmpegPath = Paths.get(ffmpegURL.toURI());
         Files.copy(ffmpegPath, path);
 
         long end = System.currentTimeMillis();
@@ -263,6 +260,4 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
             e.printStackTrace();
         }
     }
-
-
 }
