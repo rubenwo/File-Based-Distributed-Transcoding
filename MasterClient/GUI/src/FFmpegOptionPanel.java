@@ -15,7 +15,7 @@ public class FFmpegOptionPanel extends JPanel {
     private String[] videoEncoderLibs = {"Select a Video Encoder", "libx264", "libx265", "nvenc_hevc", "nvenc_h264"};
     private String[] audioEncoderLibs = {"Select an Audio Encoder", "mp3", "aac", "ac3", "eac3"};
     private String[] audioChannels = {"Select # of Audio channels (Default = input)", "2.1", "5.1", "7.1"};
-
+    private String[] outputFilesFormats = {"Select a output File Format", ".mkv", ".mp4", ".mov", ".mpg"};
     private String[] inputs;
 
     public FFmpegOptionPanel(MasterFrame masterFrame, CommandListener commandListener) {
@@ -63,6 +63,8 @@ public class FFmpegOptionPanel extends JPanel {
         for (int thread = threads_Min; thread < threads_Max; thread++)
             encoderThreadsBox.addItem(Integer.toString(thread));
 
+        JComboBox<String> outputFormatBox = new JComboBox<>(outputFilesFormats);
+
         videoEncoderLibsBox.addActionListener(e -> {
             System.out.println(videoEncoderLibsBox.getSelectedItem());
             ffmpegCommandMap.replace("videoEncoder", (String) videoEncoderLibsBox.getSelectedItem());
@@ -109,6 +111,11 @@ public class FFmpegOptionPanel extends JPanel {
             System.out.println(encoderThreadsBox.getSelectedItem());
         });
 
+        outputFormatBox.addActionListener(e -> {
+            System.out.println(outputFormatBox.getSelectedItem());
+            ffmpegCommandMap.replace("outputFormat", (String) outputFormatBox.getSelectedItem());
+        });
+
         dropDownPanel.add(videoEncoderLibsBox);
         dropDownPanel.add(videoPresetsBox);
         dropDownPanel.add(crfBox);
@@ -116,6 +123,7 @@ public class FFmpegOptionPanel extends JPanel {
         dropDownPanel.add(audioChannelsBox);
         dropDownPanel.add(audioBitrateBox);
         dropDownPanel.add(encoderThreadsBox);
+        dropDownPanel.add(outputFormatBox);
         return dropDownPanel;
     }
 
@@ -125,6 +133,7 @@ public class FFmpegOptionPanel extends JPanel {
         ffmpegCommandMap.put("crf", "20");
         ffmpegCommandMap.put("audioEncoder", "eac3");
         ffmpegCommandMap.put("audioBitrate", "640");
+        ffmpegCommandMap.put("outputFormat", ".mp4");
     }
 
     private String[] getFFmpegCommands() {
