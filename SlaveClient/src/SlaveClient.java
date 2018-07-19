@@ -1,7 +1,4 @@
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -31,12 +28,17 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     private String inputFile;
     private String outputFile;
 
-    public SlaveClient(String ServerIP) {
+    private String serverIP;
+
+    private boolean returning;
+
+    public SlaveClient(String serverIP) {
+        this.serverIP = serverIP;
         operatingSystem = OperatingSystem.detectOperatingSystem();
         this.ID = UUID.randomUUID().toString();
         this.clientId = "Slave ID: " + ID;
 
-        openSocket(ServerIP);
+        openSocket(serverIP);
 
         System.out.println("Creating temporary directory");
         try {
@@ -50,7 +52,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         clientListenerService = new SlaveClientListenerService(this, this);
         clientListenerService.start();
 
-        slaveFrame = new SlaveFrame(ServerIP, clientId);
+        slaveFrame = new SlaveFrame(serverIP, clientId);
     }
 
     private void openSocket(String HOSTNAME) {
@@ -109,6 +111,42 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         }
     }
 
+    private Object[] config = new Object[3];
+
+    private void sendFile() {
+        int port = Constants.PORTS[Constants.PORTS_INDEX];
+        Constants.PORTS_INDEX++;
+        try {
+            toServer.writeByte(5);
+            toServer.flush();
+
+            toServer.writeInt(port);
+            toServer.flush();
+
+            File file = new File(tempDir + outputFile);
+            System.out.println("sendFile(): " + file.getAbsolutePath());
+
+            toServer.writeLong(file.length());
+            toServer.flush();
+            toServer.writeUTF(file.getName());
+
+            config[0] = file.length();
+            config[1] = file.getAbsolutePath();
+            config[2] = port;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void startFileSender() {
+        System.out.println("Sending back file...");
+        try {
+            new Thread(new FileSender((long) config[0], (String) config[1], (int) config[2], this.serverIP, this)).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onJobSubmitted(String fileName) {
         slaveFrame.setCurrentJobFileName(fileName);
@@ -127,11 +165,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         slaveFrame.updateCurrentJob(progress);
     }
 
-    private void returnTranscodedFile() {
-        System.out.println("Returning file: " + tempDir + outputFile);
-    }
-
-    private void doCleanUp() throws IOException {
+    public void doCleanUp() throws IOException {
         System.out.println("Cleaning up temp directory...");
         Path untranscoded = Paths.get(tempDir + inputFile);
         Path transcoded = Paths.get(tempDir + outputFile);
@@ -145,10 +179,8 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         System.out.println("Done transcoding!");
         System.out.println("Resetting frame...");
         slaveFrame.resetFrame();
-        returnTranscodedFile();
+        sendFile();
         try {
-            doCleanUp();
-
             toServer.writeByte(4);
             toServer.flush();
         } catch (IOException e) {

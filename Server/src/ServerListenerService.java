@@ -46,6 +46,9 @@ public class ServerListenerService implements Runnable {
                         connectionHandler.setStatus(StatusEnum.IDLE);
                         distributingManager.distributeJobs();
                         break;
+                    case 5:
+                        connectionHandler.startFileReceiver();
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -21,6 +26,19 @@ public class JobDistributingManager {
 
     public void setInputs(String[] inputs) {
         Collections.addAll(this.inputs, inputs);
+        setOutputPath(inputs[0]);
+    }
+
+    private void setOutputPath(String input) {
+        Path outputPath = Paths.get(new File(input).getParent() + "/transcoded");
+        try {
+            if (!Files.exists(outputPath))
+                Files.createDirectory(outputPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (ConnectionHandler slave : onlineSlaves)
+            slave.setOutputDir(outputPath);
     }
 
     public void setCommand(String command) {

@@ -3,16 +3,19 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ConnectionHandler implements Runnable {
+public class ConnectionHandler implements Runnable, FileReceiverListener {
     private ArrayList<String> onlineSlaveIds;
     private StatusEnum status = StatusEnum.IDLE;
     private HashMap<String, Double> slaveProgress;
     private Socket socket;
     private ObjectInputStream fromClient;
     private ObjectOutputStream toClient;
+
+    private Path outputDir;
 
     private ClientStatusListener clientStatusListener;
 
@@ -85,6 +88,21 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
+    @Override
+    public void onSocketBound() {
+        try {
+            toClient.writeByte(4);
+            toClient.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onFileReceived(String input, String output) {
+
+    }
+
     public String getClientId() {
         return clientId;
     }
@@ -128,14 +146,6 @@ public class ConnectionHandler implements Runnable {
         this.status = status;
     }
 
-    private String getFileExtension(String filename) {
-        try {
-            return filename.substring(filename.lastIndexOf(".") + 1);
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
     private Object[] config = new Object[3];
 
     public void sendFile(String filename) {
@@ -172,6 +182,20 @@ public class ConnectionHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public void setOutputDir(Path outputDir) {
+        this.outputDir = outputDir;
+        System.out.println(outputDir.toAbsolutePath());
+    }
+
+    public void startFileReceiver() throws IOException {
+        int port = fromClient.readInt();
+        long fileSize = fromClient.readLong();
+
+        String inputFile = "/" + fromClient.readUTF();
+        System.out.println(outputDir.toString() + inputFile);
+
+        new Thread(new FileReceiver(fileSize, port, inputFile, null, this, outputDir.toString())).start();
     }
 }
