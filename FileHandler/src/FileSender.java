@@ -62,8 +62,8 @@ public class FileSender implements Runnable {
             socketChannel.write(buffer);
             buffer.clear();
         }
-        if(slaveClient != null)
-            slaveClient.doCleanUp();
+        //if(slaveClient != null)
+        //   slaveClient.doCleanUp();
         socketChannel.close();
     }
 

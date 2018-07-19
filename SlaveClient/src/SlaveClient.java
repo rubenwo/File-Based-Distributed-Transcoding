@@ -1,7 +1,8 @@
-import java.io.*;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -208,16 +209,21 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         }
     }
 
-    private void createEncoder() {
+    private void createEncoder() throws IOException {
         String encoderPath = tempDir + "ffmpeg";
-        InputStream ffmpegLoader = getClass().getResourceAsStream(OperatingSystem.getEncoderPath(operatingSystem));
+        System.out.println("Extracting ffmpeg...");
+        long start = System.currentTimeMillis();
         Path path = Paths.get(encoderPath);
+
+        URL encoder = getClass().getResource(OperatingSystem.getEncoderPath(operatingSystem));
         try {
-            System.out.println("Copying ffmpeg to temp dir...");
-            Files.copy(ffmpegLoader, path);
-        } catch (IOException e) {
+            Path p = Paths.get(encoder.toURI());
+            Files.copy(p, path);
+        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+        long end = System.currentTimeMillis();
+        System.out.println("Extracted in: " + (end - start) + " milliseconds");
     }
 
     @Override
