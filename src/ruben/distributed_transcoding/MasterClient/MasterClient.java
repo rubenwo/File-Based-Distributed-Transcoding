@@ -58,8 +58,8 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
     }
 
     private void initConnection() throws IOException {
-        System.out.println("Initializing Connection with ruben.distributed_transcoding.Server.ruben.distributed_transcoding.Server...");
-        toServer.writeUTF("ruben/distributed_transcoding/MasterClient");
+        System.out.println("Initializing Connection with Server...");
+        toServer.writeUTF("MasterClient");
         toServer.flush();
         toServer.writeUTF(clientId);
         toServer.flush();

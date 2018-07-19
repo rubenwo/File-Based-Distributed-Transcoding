@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class ServerGUI {
     public ServerGUI(String ipAddress) {
-        JFrame frame = new JFrame("ruben/distributed_transcoding/Server");
+        JFrame frame = new JFrame("Server");
         frame.setPreferredSize(new Dimension(210, 75));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setResizable(false);

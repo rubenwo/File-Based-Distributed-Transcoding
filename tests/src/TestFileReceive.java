@@ -12,7 +12,7 @@ public class TestFileReceive implements FileReceiverListener {
     public TestFileReceive() throws IOException {
         int port = 9001;
 
-        File file = new File("./Resources/testFiles/test.mp4");
+        File file = new File("./res/testFiles/test.mp4");
         FileReceiver receiver = new FileReceiver(file.length(), port, ".mp4", ".mov", this, null);
 
         new Thread(receiver).start();

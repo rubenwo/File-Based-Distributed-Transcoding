@@ -24,7 +24,7 @@ public class FFmpegHandler implements Runnable {
         processCommands.add(output);
         progressListener.onJobSubmitted(input);
 
-        System.out.println("ffmpeg started!");
+        System.out.println("now transcoding!");
         try {
             ffmpeg = new ProcessBuilder(processCommands).redirectErrorStream(true).start();
         } catch (IOException e) {

@@ -16,7 +16,7 @@ public class PreMasterFrame {
         JPanel inputForms = new JPanel();
         inputForms.setLayout(new BoxLayout(inputForms, BoxLayout.Y_AXIS));
 
-        JLabel ipaddr = new JLabel("Enter the ruben.distributed_transcoding.Server.ruben.distributed_transcoding.Server IP-Address below:");
+        JLabel ipaddr = new JLabel("Enter the Server IP-Address below:");
         JTextField getIpaddr = new JTextField();
 
         getIpaddr.addActionListener(e -> {

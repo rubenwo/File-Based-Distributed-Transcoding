@@ -31,7 +31,7 @@ public class PreAppGUI {
 
     private JButton[] getButtons() {
         JButton[] buttons = new JButton[3];
-        buttons[0] = new JButton("Create a ruben.distributed_transcoding.Server.ruben.distributed_transcoding.Server");
+        buttons[0] = new JButton("Create a Server");
         buttons[1] = new JButton("Create a Master GUI");
         buttons[2] = new JButton("Create A Slave GUI");
 

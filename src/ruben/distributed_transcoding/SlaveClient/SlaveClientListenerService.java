@@ -33,6 +33,7 @@ public class SlaveClientListenerService extends Thread {
                         break;
                     case 4:
                         slaveClient.startFileSender();
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

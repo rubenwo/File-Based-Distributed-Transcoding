@@ -8,7 +8,7 @@ public class SlaveFrame {
     private JProgressBar progressBar;
 
     public SlaveFrame(String ip, String clientId) {
-        JFrame frame = new JFrame("ruben.distributed_transcoding.SlaveClient.GUI.SlaveFrame");
+        JFrame frame = new JFrame("Encoder Frame");
         frame.setPreferredSize(new Dimension(350, 115));
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
@@ -46,8 +46,6 @@ public class SlaveFrame {
     }
 
     public void resetFrame() {
-        //JOptionPane.showMessageDialog(null, "Transcode Job Done!", "Job Done!", JOptionPane.INFORMATION_MESSAGE);
-
         currentJob.setText("Current Job: None\nProgress:");
         progressBar.setValue(0);
         progressBar.setString("N/A");

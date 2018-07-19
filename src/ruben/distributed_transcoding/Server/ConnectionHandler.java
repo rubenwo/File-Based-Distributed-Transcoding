@@ -59,14 +59,14 @@ public class ConnectionHandler implements Runnable, FileReceiverListener {
         System.out.println("Initializing Client...");
         String clientType = fromClient.readUTF();
         switch (clientType) {
-            case "ruben/distributed_transcoding/MasterClient":
+            case "MasterClient":
                 System.out.println("A Master client just came online.");
                 clientId = fromClient.readUTF();
                 clientStatusListener.onMasterOnline(this);
                 toClient.writeObject(onlineSlaveIds);
                 toClient.flush();
                 break;
-            case "ruben/distributed_transcoding/SlaveClient":
+            case "SlaveClient":
                 System.out.println("A slave encoder just came online.");
                 clientId = fromClient.readUTF();
                 clientIP = fromClient.readUTF();
@@ -197,7 +197,12 @@ public class ConnectionHandler implements Runnable, FileReceiverListener {
     }
 
     public void startFileReceiver() throws IOException {
-        int port = fromClient.readInt();
+        int port = Constants.PORTS[Constants.PORTS_INDEX];
+        Constants.PORTS_INDEX++;
+
+        toClient.writeInt(port);
+        toClient.flush();
+
         long fileSize = fromClient.readLong();
 
         String inputFile = "/" + fromClient.readUTF();

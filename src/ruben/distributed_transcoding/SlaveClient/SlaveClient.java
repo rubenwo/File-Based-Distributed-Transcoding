@@ -4,14 +4,16 @@ import ruben.distributed_transcoding.Constants;
 import ruben.distributed_transcoding.FileHandler.FileReceiver;
 import ruben.distributed_transcoding.FileHandler.FileReceiverListener;
 import ruben.distributed_transcoding.FileHandler.FileSender;
+import ruben.distributed_transcoding.SlaveClient.CLI.CommandLineInterface;
 import ruben.distributed_transcoding.SlaveClient.GUI.SlaveFrame;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.*;
+import java.net.Socket;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,6 +31,8 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     private OperatingSystem operatingSystem;
 
     private SlaveFrame slaveFrame;
+    private CommandLineInterface commandLineInterface;
+
     private String ID;
     private String clientId;
 
@@ -39,12 +43,6 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     private String outputFile;
 
     private String serverIP;
-
-    private boolean returning;
-
-    public static void infoBox(String infoMessage, String titleBar) {
-        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
-    }
 
     public SlaveClient(String serverIP) {
         this.serverIP = serverIP;
@@ -73,6 +71,33 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         slaveFrame = new SlaveFrame(serverIP, clientId);
     }
 
+    public SlaveClient(String serverIP, CommandLineInterface commandLineInterface) {
+        this.serverIP = serverIP;
+        operatingSystem = OperatingSystem.detectOperatingSystem();
+        this.ID = UUID.randomUUID().toString();
+        this.clientId = "Slave ID: " + ID;
+
+        openSocket(serverIP);
+
+        System.out.println("Creating temporary directory");
+        try {
+            tempDir = createTempDir();
+            try {
+                createEncoder();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Starting updater service");
+        clientListenerService = new SlaveClientListenerService(this, this);
+        clientListenerService.start();
+
+        this.commandLineInterface = commandLineInterface;
+    }
+
     private void openSocket(String HOSTNAME) {
         try {
             socket = new Socket(HOSTNAME, Constants.PORT);
@@ -94,9 +119,9 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     private void initConnection() throws IOException {
-        System.out.println("Initializing connection with ruben.distributed_transcoding.Server.ruben.distributed_transcoding.Server...");
+        System.out.println("Initializing connection with Server...");
         System.out.println(clientId);
-        toServer.writeUTF("ruben/distributed_transcoding/SlaveClient");
+        toServer.writeUTF("SlaveClient");
         toServer.flush();
         toServer.writeUTF(clientId);
         toServer.flush();
@@ -107,6 +132,21 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     private String createTempDir() throws IOException {
         Path tempDir = Files.createTempDirectory(this.ID);
         return tempDir.toString() + "/";
+    }
+
+    private void createEncoder() throws IOException, URISyntaxException {
+        String encoderPath = tempDir + "ffmpeg";
+        System.out.println("Extracting ffmpeg...");
+
+        long start = System.currentTimeMillis();
+
+        Path path = Paths.get(encoderPath);
+        URL ffmpegURL = getClass().getResource(OperatingSystem.getEncoderPath(operatingSystem));
+        Path ffmpegPath = Paths.get(ffmpegURL.toURI());
+        Files.copy(ffmpegPath, path);
+
+        long end = System.currentTimeMillis();
+        System.out.println("Extracted in: " + (end - start) + " milliseconds");
     }
 
     public ObjectInputStream getFromServer() {
@@ -132,13 +172,8 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     private Object[] config = new Object[3];
 
     private void sendFile() {
-        int port = Constants.PORTS[Constants.PORTS_INDEX];
-        Constants.PORTS_INDEX++;
         try {
             toServer.writeByte(5);
-            toServer.flush();
-
-            toServer.writeInt(port);
             toServer.flush();
 
             File file = new File(tempDir + outputFile);
@@ -157,7 +192,6 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     public void startFileSender() {
-        System.out.println("Sending back file...");
         try {
             new Thread(new FileSender((long) config[0], (String) config[1], (int) config[2], this.serverIP, this)).start();
         } catch (IOException e) {
@@ -167,7 +201,11 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
 
     @Override
     public void onJobSubmitted(String fileName) {
-        slaveFrame.setCurrentJobFileName(fileName);
+        if (slaveFrame == null)
+            System.out.println(fileName);
+        else {
+            slaveFrame.setCurrentJobFileName(fileName);
+        }
     }
 
     @Override
@@ -180,7 +218,11 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        slaveFrame.updateCurrentJob(progress);
+        if (slaveFrame == null)
+            System.out.println(progress + "%");
+        else {
+            slaveFrame.updateCurrentJob(progress);
+        }
     }
 
     public void doCleanUp() throws IOException {
@@ -195,8 +237,8 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     @Override
     public void onJobDone() {
         System.out.println("Done transcoding!");
-        System.out.println("Resetting frame...");
-        slaveFrame.resetFrame();
+        if (slaveFrame != null)
+            slaveFrame.resetFrame();
         sendFile();
         try {
             toServer.writeByte(4);
@@ -226,21 +268,6 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         }
     }
 
-    private void createEncoder() throws IOException, URISyntaxException {
-        String encoderPath = tempDir + "ffmpeg";
-        System.out.println("Extracting ffmpeg...");
-
-        long start = System.currentTimeMillis();
-
-        Path path = Paths.get(encoderPath);
-        URL ffmpegURL = getClass().getResource(OperatingSystem.getEncoderPath(operatingSystem));
-        Path ffmpegPath = Paths.get(ffmpegURL.toURI());
-        Files.copy(ffmpegPath, path);
-
-        long end = System.currentTimeMillis();
-        System.out.println("Extracted in: " + (end - start) + " milliseconds");
-    }
-
     @Override
     public void onFileReceived(String input, String output) {
         String encoderPath = tempDir + "ffmpeg";
@@ -251,13 +278,5 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         System.out.println("Starting encoder...");
         FFmpegHandler ffmpegHandler = new FFmpegHandler(encoderPath, input, ffmpegCommand, output, this);
         new Thread(ffmpegHandler).start();
-    }
-
-    public static void main(String[] args) {
-        try {
-            new SlaveClient(InetAddress.getLocalHost().getHostAddress());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
     }
 }
