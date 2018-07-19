@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,6 +34,10 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
 
     private boolean returning;
 
+    public static void infoBox(String infoMessage, String titleBar) {
+        JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: " + titleBar, JOptionPane.INFORMATION_MESSAGE);
+    }
+
     public SlaveClient(String serverIP) {
         this.serverIP = serverIP;
         operatingSystem = OperatingSystem.detectOperatingSystem();
@@ -44,7 +49,11 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         System.out.println("Creating temporary directory");
         try {
             tempDir = createTempDir();
-            createEncoder();
+            try {
+                createEncoder();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -209,19 +218,19 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         }
     }
 
-    private void createEncoder() throws IOException {
+    private void createEncoder() throws IOException, URISyntaxException {
         String encoderPath = tempDir + "ffmpeg";
         System.out.println("Extracting ffmpeg...");
+
         long start = System.currentTimeMillis();
         Path path = Paths.get(encoderPath);
 
         URL encoder = getClass().getResource(OperatingSystem.getEncoderPath(operatingSystem));
-        try {
-            Path p = Paths.get(encoder.toURI());
-            Files.copy(p, path);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+
+        Path p = Paths.get(encoder.toURI());
+
+        Files.copy(p, path);
+
         long end = System.currentTimeMillis();
         System.out.println("Extracted in: " + (end - start) + " milliseconds");
     }

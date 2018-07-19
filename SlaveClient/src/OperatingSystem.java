@@ -3,11 +3,11 @@ public enum OperatingSystem {
 
     public static String getEncoderPath(OperatingSystem operatingSystem) {
         if (operatingSystem.equals(WINDOWS))
-            return "./Windows/ffmpeg.exe";
+            return "Windows/ffmpeg.exe";
         else if (operatingSystem.equals(MAC))
-            return "./Mac/ffmpeg";
+            return "/Mac/ffmpeg";
         else if (operatingSystem.equals(UNIX))
-            return "./Unix/ffmpeg";
+            return "/Unix/ffmpeg";
         else return "This operating system is not supported.";
     }
 
