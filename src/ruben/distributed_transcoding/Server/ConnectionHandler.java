@@ -184,8 +184,9 @@ public class ConnectionHandler implements Runnable, FileReceiverListener {
     }
 
     public void startFileSenderThread() {
+        System.out.println("Endoder IP: " + this.clientIP + " | Port: " + (int) config[2]);
         try {
-            new Thread(new FileSender((long) config[0], (String) config[1], (int) config[2], this.clientIP)).start();
+            new Thread(new FileSender((long) config[0], (String) config[1], (int) config[2], "192.168.2.125")).start();
         } catch (IOException e) {
             e.printStackTrace();
         }

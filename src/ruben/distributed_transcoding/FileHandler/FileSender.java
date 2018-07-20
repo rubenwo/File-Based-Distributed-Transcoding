@@ -72,9 +72,9 @@ public class FileSender implements Runnable {
     }
 
     private SocketChannel createChannel() throws IOException {
-        System.out.println(this.port);
         SocketChannel socketChannel = SocketChannel.open();
         SocketAddress socketAddress = new InetSocketAddress(this.ipAddress, this.port);
+        System.out.println("IP: " + this.ipAddress + " | Port: " + this.port);
         socketChannel.connect(socketAddress);
         return socketChannel;
     }

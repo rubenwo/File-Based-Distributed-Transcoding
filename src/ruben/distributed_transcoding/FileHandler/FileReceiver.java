@@ -88,8 +88,9 @@ public class FileReceiver implements Runnable {
         serverSocket = ServerSocketChannel.open();
         System.out.println("serverSocket opened");
         System.out.println(this.port);
-        serverSocket.socket().bind(new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), this.port));
-        System.out.println("Bound serverSocket");
+        String hostAddress = InetAddress.getLocalHost().getHostAddress();
+        serverSocket.socket().bind(new InetSocketAddress(hostAddress, this.port));
+        System.out.println("Bound serverSocket to: "+ hostAddress);
         fileReceiverListener.onSocketBound();
         client = serverSocket.accept();
 
