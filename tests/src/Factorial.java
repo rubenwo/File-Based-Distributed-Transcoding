@@ -8,7 +8,6 @@ public class Factorial {
             System.out.println("Please enter a number.");
             double num = scanner.nextDouble();
             double factorial = calculateFactorial(num);
-            System.out.println(factorial);
             System.out.println("Factorial of " + num + " = " + factorial);
         }
     }
