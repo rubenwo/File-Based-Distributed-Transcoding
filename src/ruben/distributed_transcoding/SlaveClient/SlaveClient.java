@@ -38,6 +38,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     private String outputFile;
 
     private String serverIP;
+    private String ownIP;
 
     public SlaveClient(String serverIP) {
         this.serverIP = serverIP;
@@ -112,9 +113,9 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         toServer.flush();
         toServer.writeUTF(clientId);
         toServer.flush();
-        String ip = socket.getLocalAddress().getHostAddress();
-        System.out.println("The IP read on the Slave: " + ip);
-        toServer.writeUTF(ip);
+        this.ownIP = socket.getLocalAddress().getHostAddress();
+        System.out.println("The IP read on the Slave: " + this.ownIP);
+        toServer.writeUTF(this.ownIP);
         toServer.flush();
     }
 
@@ -151,7 +152,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
 
             outputFile = "transcoded_" + inputFile.substring(0, inputFile.lastIndexOf(".")) + outputFileExtension;
 
-            new Thread(new FileReceiver(fileSize, port, inputFile, outputFile, this, this.tempDir)).start();
+            new Thread(new FileReceiver(fileSize, port, inputFile, outputFile, this, this.tempDir, this.ownIP)).start();
         } catch (IOException e) {
             e.printStackTrace();
         }

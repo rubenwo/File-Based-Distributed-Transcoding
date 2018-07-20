@@ -26,6 +26,8 @@ public class FileReceiver implements Runnable {
     private String inputFile;
     private String outputFile;
 
+    private String ipAddress = null;
+
 
     public FileReceiver(long fileSize, int port, String inputFile, String outputFile, FileReceiverListener fileReceiverListener, String tempDir) {
         this.fileReceiverListener = fileReceiverListener;
@@ -36,6 +38,15 @@ public class FileReceiver implements Runnable {
         this.tempDir = tempDir;
     }
 
+    public FileReceiver(long fileSize, int port, String inputFile, String outputFile, FileReceiverListener fileReceiverListener, String tempDir, String ipAddress) {
+        this.fileReceiverListener = fileReceiverListener;
+        this.fileSize = fileSize;
+        this.port = port;
+        this.inputFile = inputFile;
+        this.outputFile = outputFile;
+        this.tempDir = tempDir;
+        this.ipAddress = ipAddress;
+    }
 
     @Override
     public void run() {
@@ -88,9 +99,10 @@ public class FileReceiver implements Runnable {
         serverSocket = ServerSocketChannel.open();
         System.out.println("serverSocket opened");
         System.out.println(this.port);
-        String hostAddress = InetAddress.getLocalHost().getHostAddress();
-        serverSocket.socket().bind(new InetSocketAddress(hostAddress, this.port));
-        System.out.println("Bound serverSocket to: "+ hostAddress);
+        if (ipAddress == null)
+            ipAddress = InetAddress.getLocalHost().getHostAddress();
+        serverSocket.socket().bind(new InetSocketAddress(this.ipAddress, this.port));
+        System.out.println("Bound serverSocket to: " + ipAddress);
         fileReceiverListener.onSocketBound();
         client = serverSocket.accept();
 
