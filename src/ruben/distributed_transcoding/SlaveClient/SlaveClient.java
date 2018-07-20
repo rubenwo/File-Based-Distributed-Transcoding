@@ -7,13 +7,8 @@ import ruben.distributed_transcoding.FileHandler.FileSender;
 import ruben.distributed_transcoding.SlaveClient.CLI.CommandLineInterface;
 import ruben.distributed_transcoding.SlaveClient.GUI.SlaveFrame;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,11 +50,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         System.out.println("Creating temporary directory");
         try {
             tempDir = createTempDir();
-            try {
-                createEncoder();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            createEncoder();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -82,11 +73,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         System.out.println("Creating temporary directory");
         try {
             tempDir = createTempDir();
-            try {
-                createEncoder();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            createEncoder();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -136,16 +123,14 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         return tempDir.toString() + "/";
     }
 
-    private void createEncoder() throws IOException, URISyntaxException {
-        String encoderPath = tempDir + "ffmpeg";
-        System.out.println("Extracting ffmpeg...");
-
+    private void createEncoder() throws IOException {
+        String tempEncoder = tempDir + "ffmpeg";
         long start = System.currentTimeMillis();
 
-        Path path = Paths.get(encoderPath);
-        URL ffmpegURL = getClass().getResource(OperatingSystem.getEncoderPath(operatingSystem));
-        Path ffmpegPath = Paths.get(ffmpegURL.toURI());
-        Files.copy(ffmpegPath, path);
+        InputStream in = getClass().getResourceAsStream(OperatingSystem.getEncoderPath(operatingSystem));
+        Path tempEncoderPath = Paths.get(tempEncoder);
+        Files.copy(in, tempEncoderPath);
+        in.close();
 
         long end = System.currentTimeMillis();
         System.out.println("Extracted in: " + (end - start) + " milliseconds");
