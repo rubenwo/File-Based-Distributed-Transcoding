@@ -125,7 +125,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         toServer.flush();
         toServer.writeUTF(clientId);
         toServer.flush();
-        String ip = socket.getInetAddress().getHostAddress();
+        String ip = socket.getLocalAddress().getHostAddress();
         System.out.println("The IP read on the Slave: " + ip);
         toServer.writeUTF(ip);
         toServer.flush();
