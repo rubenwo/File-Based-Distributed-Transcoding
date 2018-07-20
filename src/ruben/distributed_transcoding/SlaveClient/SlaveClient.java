@@ -125,7 +125,9 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         toServer.flush();
         toServer.writeUTF(clientId);
         toServer.flush();
-        toServer.writeUTF(socket.getInetAddress().getHostAddress());
+        String ip = socket.getInetAddress().getHostAddress();
+        System.out.println("The IP read on the Slave: " + ip);
+        toServer.writeUTF(ip);
         toServer.flush();
     }
 
@@ -154,6 +156,7 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     public void receiveFile() {
+        //OWN IP
         try {
             int port = fromServer.readInt();
             long fileSize = fromServer.readLong();
@@ -195,8 +198,9 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
 
     public void startFileSender() {
         System.out.println("Server IP: " + serverIP + " | Port: " + port);
+        //Server IP address Required!
         try {
-            new Thread(new FileSender(fileSize, fileName, port, "192.168.2.19", this)).start();
+            new Thread(new FileSender(fileSize, fileName, port, this.serverIP, this)).start();
         } catch (IOException e) {
             e.printStackTrace();
         }

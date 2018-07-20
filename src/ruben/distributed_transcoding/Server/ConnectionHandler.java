@@ -70,6 +70,7 @@ public class ConnectionHandler implements Runnable, FileReceiverListener {
                 System.out.println("A slave encoder just came online.");
                 clientId = fromClient.readUTF();
                 clientIP = fromClient.readUTF();
+                System.out.println("Client IP: " + clientIP);
                 clientStatusListener.onSlaveOnline(this);
                 break;
         }
@@ -184,9 +185,10 @@ public class ConnectionHandler implements Runnable, FileReceiverListener {
     }
 
     public void startFileSenderThread() {
-        System.out.println("Endoder IP: " + this.clientIP + " | Port: " + (int) config[2]);
+        System.out.println("Encoder IP: " + this.clientIP + " | Port: " + (int) config[2]);
+        //SlaveClient IP required!
         try {
-            new Thread(new FileSender((long) config[0], (String) config[1], (int) config[2], "192.168.2.125")).start();
+            new Thread(new FileSender((long) config[0], (String) config[1], (int) config[2], this.clientIP)).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -216,6 +218,7 @@ public class ConnectionHandler implements Runnable, FileReceiverListener {
 
 
     public void startFileReceiver() throws IOException {
+        //OWN IP
         long fileSize = fromClient.readLong();
 
         String inputFile = "/" + fromClient.readUTF();
