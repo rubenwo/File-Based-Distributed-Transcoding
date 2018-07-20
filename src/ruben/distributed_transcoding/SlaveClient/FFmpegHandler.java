@@ -22,7 +22,7 @@ public class FFmpegHandler implements Runnable {
         for (String str : commands)
             processCommands.add(str);
         processCommands.add(output);
-        progressListener.onJobSubmitted(input);
+        progressListener.onJobSubmitted(input.substring(input.lastIndexOf("/")));
 
         System.out.println("now transcoding!");
         try {
