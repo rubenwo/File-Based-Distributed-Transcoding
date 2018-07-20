@@ -194,8 +194,9 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
     }
 
     public void startFileSender() {
+        System.out.println("Server IP: " + serverIP + " | Port: " + port);
         try {
-            new Thread(new FileSender(fileSize, fileName, port, this.serverIP, this)).start();
+            new Thread(new FileSender(fileSize, fileName, port, "192.168.2.19", this)).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
