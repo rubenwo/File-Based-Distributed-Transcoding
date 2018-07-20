@@ -2,6 +2,7 @@ import ruben.distributed_transcoding.SlaveClient.FFmpegHandler;
 import ruben.distributed_transcoding.SlaveClient.OperatingSystem;
 import ruben.distributed_transcoding.SlaveClient.ProgressListener;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -39,6 +40,8 @@ public class FFmpegExtractionTest implements ProgressListener {
         Path tempEncoderPath = Paths.get(tempEncoder);
         Files.copy(in, tempEncoderPath);
         in.close();
+        System.out.println(tempEncoder);
+        new File(tempEncoder).setExecutable(true);
 
         long end = System.currentTimeMillis();
         System.out.println("Extracted in: " + (end - start) + " milliseconds");
