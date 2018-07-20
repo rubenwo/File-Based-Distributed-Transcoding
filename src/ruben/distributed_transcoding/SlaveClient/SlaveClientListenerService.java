@@ -34,6 +34,10 @@ public class SlaveClientListenerService extends Thread {
                     case 4:
                         slaveClient.startFileSender();
                         break;
+                    case 5:
+                        int port = fromServer.readInt();
+                        slaveClient.setPort(port);
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

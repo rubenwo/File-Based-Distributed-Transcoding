@@ -191,18 +191,30 @@ public class ConnectionHandler implements Runnable, FileReceiverListener {
         }
     }
 
+    private int port;
+
+    public void returnCurrentPort() {
+        try {
+            port = Constants.PORTS[Constants.PORTS_INDEX];
+            Constants.PORTS_INDEX++;
+
+            toClient.writeByte(5);
+            toClient.flush();
+
+            toClient.writeInt(port);
+            toClient.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setOutputDir(Path outputDir) {
         this.outputDir = outputDir;
         System.out.println(outputDir.toAbsolutePath());
     }
 
+
     public void startFileReceiver() throws IOException {
-        int port = Constants.PORTS[Constants.PORTS_INDEX];
-        Constants.PORTS_INDEX++;
-
-        toClient.writeInt(port);
-        toClient.flush();
-
         long fileSize = fromClient.readLong();
 
         String inputFile = "/" + fromClient.readUTF();

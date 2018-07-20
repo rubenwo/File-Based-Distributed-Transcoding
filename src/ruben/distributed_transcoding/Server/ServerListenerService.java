@@ -51,6 +51,9 @@ public class ServerListenerService implements Runnable {
                     case 5:
                         connectionHandler.startFileReceiver();
                         break;
+                    case 6:
+                        connectionHandler.returnCurrentPort();
+                        break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();

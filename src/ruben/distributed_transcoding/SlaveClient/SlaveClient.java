@@ -169,31 +169,33 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         }
     }
 
-    private Object[] config = new Object[3];
+    private long fileSize;
+    private String fileName;
+    private int port = -1;
 
-    private void sendFile() {
-        try {
-            toServer.writeByte(5);
-            toServer.flush();
+    public void setPort(int port) {
+        this.port = port;
+        System.out.println("Port on slave is: " + port);
+    }
 
-            File file = new File(tempDir + outputFile);
-            System.out.println("sendFile(): " + file.getAbsolutePath());
+    private void sendFile() throws IOException {
+        toServer.writeByte(5);
+        toServer.flush();
 
-            toServer.writeLong(file.length());
-            toServer.flush();
-            toServer.writeUTF(file.getName());
+        File file = new File(tempDir + outputFile);
+        System.out.println("sendFile(): " + file.getAbsolutePath());
 
-            config[0] = file.length();
-            config[1] = file.getAbsolutePath();
-            config[2] = port;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        toServer.writeLong(file.length());
+        toServer.flush();
+        toServer.writeUTF(file.getName());
+
+        fileSize = file.length();
+        fileName = file.getAbsolutePath();
     }
 
     public void startFileSender() {
         try {
-            new Thread(new FileSender((long) config[0], (String) config[1], (int) config[2], this.serverIP, this)).start();
+            new Thread(new FileSender(fileSize, fileName, port, this.serverIP, this)).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -239,8 +241,11 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         System.out.println("Done transcoding!");
         if (slaveFrame != null)
             slaveFrame.resetFrame();
-        sendFile();
         try {
+            toServer.writeByte(6);
+            toServer.flush();
+            sendFile();
+
             toServer.writeByte(4);
             toServer.flush();
         } catch (IOException e) {
