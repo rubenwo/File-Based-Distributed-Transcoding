@@ -132,6 +132,8 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         Path tempEncoderPath = Paths.get(tempEncoder);
         Files.copy(in, tempEncoderPath);
         in.close();
+        System.out.println(tempEncoder);
+        new File(tempEncoder).setExecutable(true);
 
         long end = System.currentTimeMillis();
         System.out.println("Extracted in: " + (end - start) + " milliseconds");
