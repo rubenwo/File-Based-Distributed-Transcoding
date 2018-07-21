@@ -19,7 +19,7 @@ public class JobDistributingManager {
         return instance;
     }
 
-    private ArrayList<ConnectionHandler> onlineSlaves;
+    private ArrayList<ConnectionHandler> onlineSlaves = null;
     private ArrayList<String> inputs = new ArrayList<>();
     private String command;
 
@@ -66,7 +66,7 @@ public class JobDistributingManager {
                 Constants.PORTS_INDEX = 0;
             }
         } else {
-            System.out.println("There are no slaves online at the moment!");
+            System.err.println("There are no slaves online at the moment!");
         }
     }
 
