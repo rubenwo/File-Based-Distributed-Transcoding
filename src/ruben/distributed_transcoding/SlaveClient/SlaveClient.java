@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, FileReceiverListener {
+public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, FileReceiverListener, SlaveShutdownListener {
 
 
     private Socket socket;
@@ -117,6 +117,11 @@ public class SlaveClient implements ProgressListener, FFmpegJobRequestListener, 
         System.out.println("The IP read on the Slave: " + this.ownIP);
         toServer.writeUTF(this.ownIP);
         toServer.flush();
+    }
+
+    @Override
+    public void shutdown() {
+
     }
 
     private String createTempDir() throws IOException {

@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProgressListener, FFmpegCommandListener {
+public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProgressListener, FFmpegCommandListener, ServerShutdownListener {
     private JobDistributingManager distributingManager;
     private ArrayList<String> onlineSlaveIds = new ArrayList<>();
     private ArrayList<ConnectionHandler> slaveHandlers = new ArrayList<>();
@@ -103,6 +103,7 @@ public class ThreadedServer implements Runnable, ClientStatusListener, SlaveProg
         distributingManager.distributeJobs();
     }
 
+    @Override
     public void shutdown() {
         running = false;
     }
