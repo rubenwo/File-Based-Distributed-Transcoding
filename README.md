@@ -1,4 +1,4 @@
-File-Based Distributed Transcoding
+File-Based Distributed Transcoding (This program uses static-ffmpeg releases)
 
 1: Start the application
 2: Start a server
