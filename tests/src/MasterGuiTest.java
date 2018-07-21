@@ -1,7 +1,7 @@
 import ruben.distributed_transcoding.MasterClient.CommandListener;
 import ruben.distributed_transcoding.MasterClient.GUI.MasterFrame;
 import ruben.distributed_transcoding.MasterClient.SlaveStatusListener;
-import ruben.distributed_transcoding.SlaveClient.OperatingSystem;
+import ruben.distributed_transcoding.Utils.OperatingSystem;
 
 import java.util.ArrayList;
 

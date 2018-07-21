@@ -6,6 +6,8 @@ import ruben.distributed_transcoding.FileHandler.FileReceiverListener;
 import ruben.distributed_transcoding.FileHandler.FileSender;
 import ruben.distributed_transcoding.SlaveClient.CLI.CommandLineInterface;
 import ruben.distributed_transcoding.SlaveClient.GUI.SlaveFrame;
+import ruben.distributed_transcoding.Utils.FFmpegHandler;
+import ruben.distributed_transcoding.Utils.OperatingSystem;
 
 import java.io.*;
 import java.net.Socket;

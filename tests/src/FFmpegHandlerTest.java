@@ -1,6 +1,6 @@
-import ruben.distributed_transcoding.SlaveClient.FFmpegHandler;
+import ruben.distributed_transcoding.Utils.FFmpegHandler;
 import ruben.distributed_transcoding.SlaveClient.GUI.SlaveFrame;
-import ruben.distributed_transcoding.SlaveClient.OperatingSystem;
+import ruben.distributed_transcoding.Utils.OperatingSystem;
 import ruben.distributed_transcoding.SlaveClient.ProgressListener;
 
 public class FFmpegHandlerTest implements ProgressListener {

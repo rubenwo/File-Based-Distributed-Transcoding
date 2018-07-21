@@ -1,4 +1,6 @@
-package ruben.distributed_transcoding.SlaveClient;
+package ruben.distributed_transcoding.Utils;
+
+import ruben.distributed_transcoding.SlaveClient.ProgressListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;

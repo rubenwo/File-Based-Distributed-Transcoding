@@ -1,4 +1,4 @@
-package ruben.distributed_transcoding.SlaveClient;
+package ruben.distributed_transcoding.Utils;
 
 public enum OperatingSystem {
     WINDOWS, MAC, UNIX;
