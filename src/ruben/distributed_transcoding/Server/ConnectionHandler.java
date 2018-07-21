@@ -158,7 +158,7 @@ public class ConnectionHandler implements Runnable, FileReceiverListener {
 
     public void sendFile(String filename) {
         int port = Constants.PORTS[Constants.PORTS_INDEX];
-        Constants.PORTS_INDEX++;
+        Constants.INCREASE_PORTS_INDEX();
 
         try {
             toClient.writeByte(3);
@@ -199,7 +199,7 @@ public class ConnectionHandler implements Runnable, FileReceiverListener {
     public void returnCurrentPort() {
         try {
             port = Constants.PORTS[Constants.PORTS_INDEX];
-            Constants.PORTS_INDEX++;
+            Constants.INCREASE_PORTS_INDEX();
 
             toClient.writeByte(5);
             toClient.flush();

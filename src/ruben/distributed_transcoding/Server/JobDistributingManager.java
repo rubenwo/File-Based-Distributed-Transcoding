@@ -31,6 +31,8 @@ public class JobDistributingManager {
     public void setInputs(String[] inputs) {
         Collections.addAll(this.inputs, inputs);
         setOutputPath(inputs[0]);
+        System.out.println("Resetting PORTS_INDEX to 0");
+        Constants.PORTS_INDEX = 0;
     }
 
     private void setOutputPath(String input) {
@@ -62,8 +64,6 @@ public class JobDistributingManager {
                 }
             } else {
                 System.out.println("There are no (more) inputs to be transcoded!");
-                System.out.println("Resetting PORTS_INDEX to 0");
-                Constants.PORTS_INDEX = 0;
             }
         } else {
             System.err.println("There are no slaves online at the moment!");

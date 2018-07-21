@@ -14,7 +14,7 @@ public class Server {
     public Server() {
         Constants.PORTS = new int[1000];
         for (int i = 0; i < Constants.PORTS.length; i++)
-            Constants.PORTS[i] = 9001 + i;
+            Constants.PORTS[i] = 50000 + i;
         String ipAddress = null;
         try {
             ipAddress = InetAddress.getLocalHost().getHostAddress();
