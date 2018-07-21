@@ -12,7 +12,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MasterClient implements CommandListener, SlaveStatusListener {
+public class MasterClient implements CommandListener, SlaveStatusListener, MasterShutdownListener {
     private ArrayList<String> onlineClients;
 
     private Socket socket;
@@ -69,6 +69,11 @@ public class MasterClient implements CommandListener, SlaveStatusListener {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void shutdown() {
+
     }
 
     @Override
